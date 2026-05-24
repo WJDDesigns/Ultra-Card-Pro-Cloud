@@ -1,4 +1,15 @@
-"use strict";(self.webpackChunkultra_card=self.webpackChunkultra_card||[]).push([[741],{4741:(r,o,t)=>{t.r(o),t.d(o,{HubAccountTab:()=>l});var i=t(5183),e=t(4276),a=t(9978),n=t(378),s=t(7568),c=function(r,o,t,i){var e,a=arguments.length,n=a<3?o:null===i?i=Object.getOwnPropertyDescriptor(o,t):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(r,o,t,i);else for(var s=r.length-1;s>=0;s--)(e=r[s])&&(n=(a<3?e(n):a>3?e(o,t,n):e(o,t))||n);return a>3&&n&&Object.defineProperty(o,t,n),n};let l=class extends i.WF{constructor(){super(...arguments),this.auth=null,this.cloudUser=null,this._formMode="signin",this._username="",this._password="",this._email="",this._displayName="",this._loading=!1,this._error="",this._autoConfigNote="",this._syncStatus=null,this._syncCounts={colors:0,variables:0,presets:0,favorites:0}}connectedCallback(){super.connectedCallback(),this._syncStatus=s.Q.getSyncStatus(),this._refreshCounts(),this._syncListener=r=>{this._syncStatus=r,this._refreshCounts()},s.Q.addListener(this._syncListener)}disconnectedCallback(){super.disconnectedCallback(),this._syncListener&&s.Q.removeListener(this._syncListener)}_refreshCounts(){var r,o,t,i;try{const e=JSON.parse(null!==(r=localStorage.getItem("ultra-card-favorite-colors"))&&void 0!==r?r:"[]"),a=JSON.parse(null!==(o=localStorage.getItem("ultra-card-custom-variables"))&&void 0!==o?o:"[]"),n=JSON.parse(null!==(t=localStorage.getItem("ultra-card-favorites"))&&void 0!==t?t:"[]"),s=JSON.parse(null!==(i=localStorage.getItem("ultra-card-presets"))&&void 0!==i?i:"[]");this._syncCounts={colors:Array.isArray(e)?e.length:0,variables:Array.isArray(a)?a.length:0,favorites:Array.isArray(n)?n.length:0,presets:Array.isArray(s)?s.length:0}}catch(r){this._syncCounts={colors:0,variables:0,presets:0,favorites:0}}}_formatSyncTime(r){if(!r)return"Never";const o=Date.now()-r.getTime();return o<6e4?"Just now":o<36e5?`${Math.floor(o/6e4)}m ago`:o<864e5?`${Math.floor(o/36e5)}h ago`:r.toLocaleDateString()}get _effectiveUser(){return n.x.checkIntegrationAuth(this.hass)||this.cloudUser}_switchFormMode(r){this._formMode=r,this._error="",this._autoConfigNote=""}async _handleSignIn(r){r.preventDefault();const o=this._username.trim();if(o&&this._password){this._loading=!0,this._error="",this._autoConfigNote="";try{await n.x.loginViaHass(this.hass,o,this._password),this._username="",this._password=""}catch(r){this._error=r instanceof Error?r.message:"Login failed"}finally{this._loading=!1}}else this._error="Please enter your email and password"}async _handleRegister(r){if(r.preventDefault(),this._error="",this._autoConfigNote="",this._username.trim()&&this._email.trim()){this._loading=!0;try{const r=await n.x.registerViaHass(this.hass,this._username.trim(),this._email.trim(),this._displayName.trim());this._username="",this._email="",this._displayName="",this._autoConfigNote=r||"Account created. Check your email inbox, junk, or spam for the ultracard.io message to finish setting your password, then come back here to sign in."}catch(r){this._error=r instanceof Error?r.message:"Registration failed. Please try again."}finally{this._loading=!1}}else this._error="Please fill in all required fields."}async _handleLogout(){await n.x.logoutViaHass(this.hass)}render(){const r=this._effectiveUser;return r?this._renderAuthenticated(r):n.x.isIntegrationInstalled(this.hass)?this._renderUnauthenticated():this._renderSetupGuide()}_renderSetupGuide(){return i.qy`
+"use strict";(self.webpackChunkultra_card=self.webpackChunkultra_card||[]).push([[741],{4741(r,o,i){i.r(o),i.d(o,{HubAccountTab:()=>l});var t=i(5183),e=i(4276),a=i(9978),n=i(378),s=i(7568),c=function(r,o,i,t){var e,a=arguments.length,n=a<3?o:null===t?t=Object.getOwnPropertyDescriptor(o,i):t;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(r,o,i,t);else for(var s=r.length-1;s>=0;s--)(e=r[s])&&(n=(a<3?e(n):a>3?e(o,i,n):e(o,i))||n);return a>3&&n&&Object.defineProperty(o,i,n),n};let l=class extends t.WF{constructor(){super(...arguments),this.auth=null,this.cloudUser=null,this._formMode="signin",this._username="",this._password="",this._email="",this._displayName="",this._loading=!1,this._error="",this._autoConfigNote="",this._syncStatus=null,this._syncCounts={colors:0,variables:0,presets:0,favorites:0}}connectedCallback(){super.connectedCallback(),this._syncStatus=s.Q.getSyncStatus(),this._refreshCounts(),this._syncListener=r=>{this._syncStatus=r,this._refreshCounts()},s.Q.addListener(this._syncListener)}disconnectedCallback(){super.disconnectedCallback(),this._syncListener&&s.Q.removeListener(this._syncListener)}_refreshCounts(){var r,o,i,t;try{const e=JSON.parse(null!==(r=localStorage.getItem("ultra-card-favorite-colors"))&&void 0!==r?r:"[]"),a=JSON.parse(null!==(o=localStorage.getItem("ultra-card-custom-variables"))&&void 0!==o?o:"[]"),n=JSON.parse(null!==(i=localStorage.getItem("ultra-card-favorites"))&&void 0!==i?i:"[]"),s=JSON.parse(null!==(t=localStorage.getItem("ultra-card-presets"))&&void 0!==t?t:"[]");this._syncCounts={colors:Array.isArray(e)?e.length:0,variables:Array.isArray(a)?a.length:0,favorites:Array.isArray(n)?n.length:0,presets:Array.isArray(s)?s.length:0}}catch(r){this._syncCounts={colors:0,variables:0,presets:0,favorites:0}}}_formatSyncTime(r){if(!r)return"Never";const o=Date.now()-r.getTime();return o<6e4?"Just now":o<36e5?`${Math.floor(o/6e4)}m ago`:o<864e5?`${Math.floor(o/36e5)}h ago`:r.toLocaleDateString()}get _effectiveUser(){return n.x.checkIntegrationAuth(this.hass)||this.cloudUser}_switchFormMode(r){this._formMode=r,this._error="",this._autoConfigNote=""}async _handleSignIn(r){r.preventDefault();const o=this._username.trim();if(o&&this._password){this._loading=!0,this._error="",this._autoConfigNote="";try{await n.x.loginViaHass(this.hass,o,this._password),this._username="",this._password=""}catch(r){this._error=r instanceof Error?r.message:"Login failed"}finally{this._loading=!1}}else this._error="Please enter your email and password"}async _handleRegister(r){if(r.preventDefault(),this._error="",this._autoConfigNote="",this._username.trim()&&this._email.trim()){this._loading=!0;try{const r=await n.x.registerViaHass(this.hass,this._username.trim(),this._email.trim(),this._displayName.trim());this._username="",this._email="",this._displayName="",this._autoConfigNote=r||"Account created. Check your email inbox, junk, or spam for the ultracard.io message to finish setting your password, then come back here to sign in."}catch(r){this._error=r instanceof Error?r.message:"Registration failed. Please try again."}finally{this._loading=!1}}else this._error="Please fill in all required fields."}async _handleLogout(){await n.x.logoutViaHass(this.hass)}_isHaAdmin(){var r,o;return Boolean(null===(o=null===(r=this.hass)||void 0===r?void 0:r.user)||void 0===o?void 0:o.is_admin)}_renderAdminNotice(){return this._isHaAdmin()?t.s6:t.qy`
+      <div class="admin-notice" role="note">
+        <ha-icon icon="mdi:shield-account-outline"></ha-icon>
+        <div>
+          <strong>Home Assistant administrator required</strong>
+          <p>
+            Shared sign-in, cloud sync, and uploads through Ultra Card Connect are managed by
+            HA administrators only. You can still use Hub presets, colors, and documentation.
+          </p>
+        </div>
+      </div>
+    `}render(){const r=this._effectiveUser;return r?this._renderAuthenticated(r):n.x.isIntegrationInstalled(this.hass)?this._renderUnauthenticated():this._renderSetupGuide()}_renderSetupGuide(){return t.qy`
       <div class="account-card">
         <h3>
           <ha-icon icon="mdi:connection"></ha-icon>
@@ -33,7 +44,8 @@
           Set Up Integration
         </a>
       </div>
-    `}_renderAuthenticated(r){var o,t;const e="pro"===(null===(o=r.subscription)||void 0===o?void 0:o.tier)&&"active"===(null===(t=r.subscription)||void 0===t?void 0:t.status);return i.qy`
+    `}_renderAuthenticated(r){var o,i;const e="pro"===(null===(o=r.subscription)||void 0===o?void 0:o.tier)&&"active"===(null===(i=r.subscription)||void 0===i?void 0:i.status);return t.qy`
+      ${this._renderAdminNotice()}
       <div class="account-card">
         <h3>
           <ha-icon icon="mdi:account-circle"></ha-icon>
@@ -49,20 +61,20 @@
             <span>${r.email}</span>
           </div>
           <div class="tier-badge ${e?"pro":"free"}">
-            ${e?i.qy`<ha-icon icon="mdi:star" style="--mdc-icon-size:14px"></ha-icon>`:""}
+            ${e?t.qy`<ha-icon icon="mdi:star" style="--mdc-icon-size:14px"></ha-icon>`:""}
             ${e?"Pro":"Free"}
           </div>
         </div>
 
         ${this._renderSyncStats(e)}
 
-        ${e?i.qy`
+        ${e?t.qy`
               <div class="manage-link">
                 <a href="https://ultracard.io/dashboard/" target="_blank" rel="noopener noreferrer">
                   Manage account at ultracard.io
                 </a>
               </div>
-            `:i.qy`
+            `:t.qy`
               <div class="upgrade-section">
                 <h4>Upgrade to Ultra Card Pro</h4>
                 <p>
@@ -82,7 +94,7 @@
 
         <button class="logout-btn" @click=${this._handleLogout}>Sign out</button>
       </div>
-    `}_renderSyncStats(r){var o,t,e,a;const n=this._syncStatus,c=null!==(o=null==n?void 0:n.isSyncing)&&void 0!==o&&o,l=this._formatSyncTime(null!==(t=null==n?void 0:n.lastColorsSync)&&void 0!==t?t:null),d=this._formatSyncTime(null!==(e=null==n?void 0:n.lastVariablesSync)&&void 0!==e?e:null),p=this._formatSyncTime(null!==(a=null==n?void 0:n.lastFavoritesSync)&&void 0!==a?a:null),u=[{icon:"mdi:palette",label:"Colors",count:this._syncCounts.colors,lastSync:l},{icon:"mdi:variable",label:"Variables",count:this._syncCounts.variables,lastSync:d},{icon:"mdi:heart",label:"Favorites",count:this._syncCounts.favorites,lastSync:p},{icon:"mdi:view-dashboard",label:"Presets",count:this._syncCounts.presets,lastSync:"—",proOnly:!1}];return i.qy`
+    `}_renderSyncStats(r){var o,i,e,a;const n=this._syncStatus,c=null!==(o=null==n?void 0:n.isSyncing)&&void 0!==o&&o,l=this._formatSyncTime(null!==(i=null==n?void 0:n.lastColorsSync)&&void 0!==i?i:null),d=this._formatSyncTime(null!==(e=null==n?void 0:n.lastVariablesSync)&&void 0!==e?e:null),p=this._formatSyncTime(null!==(a=null==n?void 0:n.lastFavoritesSync)&&void 0!==a?a:null),u=[{icon:"mdi:palette",label:"Colors",count:this._syncCounts.colors,lastSync:l},{icon:"mdi:variable",label:"Variables",count:this._syncCounts.variables,lastSync:d},{icon:"mdi:heart",label:"Favorites",count:this._syncCounts.favorites,lastSync:p},{icon:"mdi:view-dashboard",label:"Presets",count:this._syncCounts.presets,lastSync:"—",proOnly:!1}];return t.qy`
       <div class="sync-stats-section">
         <div class="sync-stats-header">
           <span class="sync-stats-title">
@@ -95,15 +107,15 @@
         </div>
 
         <div class="sync-stats-grid">
-          ${u.map((({icon:r,label:o,count:t,lastSync:e})=>i.qy`
+          ${u.map(({icon:r,label:o,count:i,lastSync:e})=>t.qy`
             <div class="sync-stat-card">
               <div class="sync-stat-icon">
                 <ha-icon icon=${r}></ha-icon>
               </div>
               <div class="sync-stat-body">
-                <div class="sync-stat-count">${t}</div>
+                <div class="sync-stat-count">${i}</div>
                 <div class="sync-stat-label">${o}</div>
-                ${"—"!==e?i.qy`
+                ${"—"!==e?t.qy`
                   <div class="sync-stat-time">
                     <ha-icon icon="mdi:clock-outline"></ha-icon>
                     ${e}
@@ -111,7 +123,7 @@
                 `:""}
               </div>
             </div>
-          `))}
+          `)}
         </div>
 
         <button
@@ -123,7 +135,8 @@
           ${c?"Syncing…":"Sync Now"}
         </button>
       </div>
-    `}_renderUnauthenticated(){return i.qy`
+    `}_renderUnauthenticated(){return t.qy`
+      ${this._renderAdminNotice()}
       <div class="account-card">
         <h3>
           <ha-icon icon="mdi:login"></ha-icon>
@@ -150,7 +163,7 @@
 
         ${"signin"===this._formMode?this._renderSignInForm():this._renderRegisterForm()}
       </div>
-    `}_renderSignInForm(){return i.qy`
+    `}_renderSignInForm(){return t.qy`
       <form class="form-section" @submit=${this._handleSignIn}>
         <div class="form-field">
           <label for="account-signin-username">Username or email</label>
@@ -179,13 +192,13 @@
             Forgot password?
           </a>
         </p>
-        ${this._error?i.qy`<p class="form-error">${this._error}</p>`:""}
-        ${this._autoConfigNote?i.qy`<p class="form-note">${this._autoConfigNote}</p>`:""}
+        ${this._error?t.qy`<p class="form-error">${this._error}</p>`:""}
+        ${this._autoConfigNote?t.qy`<p class="form-note">${this._autoConfigNote}</p>`:""}
         <button type="submit" class="form-submit" ?disabled=${this._loading}>
-          ${this._loading?i.qy`<ha-icon icon="mdi:loading" class="spinning"></ha-icon> Signing in…`:i.qy`<ha-icon icon="mdi:login"></ha-icon> Sign In`}
+          ${this._loading?t.qy`<ha-icon icon="mdi:loading" class="spinning"></ha-icon> Signing in…`:t.qy`<ha-icon icon="mdi:login"></ha-icon> Sign In`}
         </button>
       </form>
-    `}_renderRegisterForm(){return i.qy`
+    `}_renderRegisterForm(){return t.qy`
       <form class="form-section" @submit=${this._handleRegister}>
         <div class="register-notice">
           <ha-icon icon="mdi:cloud-check"></ha-icon>
@@ -224,17 +237,17 @@
             autocomplete="username"
           />
         </div>
-        ${this._error?i.qy`<p class="form-error">${this._error}</p>`:""}
-        ${this._autoConfigNote?i.qy`<p class="form-note">${this._autoConfigNote}</p>`:""}
+        ${this._error?t.qy`<p class="form-error">${this._error}</p>`:""}
+        ${this._autoConfigNote?t.qy`<p class="form-note">${this._autoConfigNote}</p>`:""}
         <button
           type="submit"
           class="form-submit-btn"
           ?disabled=${this._loading||!this._username.trim()||!this._email.trim()}
         >
-          ${this._loading?i.qy`<ha-icon icon="mdi:loading" class="spin"></ha-icon> Creating account…`:i.qy`<ha-icon icon="mdi:email-fast"></ha-icon> Create Account`}
+          ${this._loading?t.qy`<ha-icon icon="mdi:loading" class="spin"></ha-icon> Creating account…`:t.qy`<ha-icon icon="mdi:email-fast"></ha-icon> Create Account`}
         </button>
       </form>
-    `}};l.styles=[a.z,i.AH`
+    `}};l.styles=[a.z,t.AH`
       :host {
         display: block;
         animation: fadeSlideIn 0.3s ease-out;
@@ -472,6 +485,38 @@
       .manage-link a {
         color: var(--primary-color);
         text-decoration: none;
+      }
+
+      .admin-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        background: rgba(var(--rgb-primary-color, 3, 169, 244), 0.08);
+        border: 1px solid rgba(var(--rgb-primary-color, 3, 169, 244), 0.2);
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--primary-text-color);
+      }
+
+      .admin-notice ha-icon {
+        --mdc-icon-size: 22px;
+        color: var(--primary-color);
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .admin-notice strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+
+      .admin-notice p {
+        margin: 0;
+        color: var(--secondary-text-color);
       }
 
       /* Password strength meter */

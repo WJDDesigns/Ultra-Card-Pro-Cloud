@@ -1,0 +1,488 @@
+{
+  "synced_at": "2026-05-24T19:40:52.352Z",
+  "wiki_last_commit_at": "2026-05-03T12:31:17-04:00",
+  "source": "https://github.com/WJDDesigns/Ultra-Card/wiki",
+  "pages": [
+    {
+      "slug": "home",
+      "title": "Ultra Card Wiki",
+      "file": "pages/home.md"
+    },
+    {
+      "slug": "module-3rd-party-card",
+      "title": "3rd Party Card",
+      "file": "pages/module-3rd-party-card.md"
+    },
+    {
+      "slug": "module-accordion",
+      "title": "Accordion",
+      "file": "pages/module-accordion.md"
+    },
+    {
+      "slug": "actions",
+      "title": "Actions",
+      "file": "pages/actions.md"
+    },
+    {
+      "slug": "module-activity-feed",
+      "title": "Activity Feed",
+      "file": "pages/module-activity-feed.md"
+    },
+    {
+      "slug": "module-alarm-panel",
+      "title": "Alarm Panel",
+      "file": "pages/module-alarm-panel.md"
+    },
+    {
+      "slug": "module-alert-center",
+      "title": "Alert Center",
+      "file": "pages/module-alert-center.md"
+    },
+    {
+      "slug": "module-animated-clock",
+      "title": "Animated Clock",
+      "file": "pages/module-animated-clock.md"
+    },
+    {
+      "slug": "module-animated-forecast",
+      "title": "Animated Forecast",
+      "file": "pages/module-animated-forecast.md"
+    },
+    {
+      "slug": "module-animated-weather",
+      "title": "Animated Weather",
+      "file": "pages/module-animated-weather.md"
+    },
+    {
+      "slug": "architecture",
+      "title": "Architecture",
+      "file": "pages/architecture.md"
+    },
+    {
+      "slug": "module-area-summary",
+      "title": "Area / Room Summary",
+      "file": "pages/module-area-summary.md"
+    },
+    {
+      "slug": "module-background",
+      "title": "Background",
+      "file": "pages/module-background.md"
+    },
+    {
+      "slug": "module-badge-of-honor",
+      "title": "Badge of Honor",
+      "file": "pages/module-badge-of-honor.md"
+    },
+    {
+      "slug": "module-bar",
+      "title": "Bar",
+      "file": "pages/module-bar.md"
+    },
+    {
+      "slug": "module-button",
+      "title": "Button",
+      "file": "pages/module-button.md"
+    },
+    {
+      "slug": "module-calendar",
+      "title": "Calendar",
+      "file": "pages/module-calendar.md"
+    },
+    {
+      "slug": "module-camera",
+      "title": "Camera",
+      "file": "pages/module-camera.md"
+    },
+    {
+      "slug": "module-climate",
+      "title": "Climate",
+      "file": "pages/module-climate.md"
+    },
+    {
+      "slug": "module-cover",
+      "title": "Cover",
+      "file": "pages/module-cover.md"
+    },
+    {
+      "slug": "custom-variables",
+      "title": "Custom Variables",
+      "file": "pages/custom-variables.md"
+    },
+    {
+      "slug": "design-system",
+      "title": "Design System",
+      "file": "pages/design-system.md"
+    },
+    {
+      "slug": "development",
+      "title": "Development",
+      "file": "pages/development.md"
+    },
+    {
+      "slug": "module-dropdown",
+      "title": "Dropdown",
+      "file": "pages/module-dropdown.md"
+    },
+    {
+      "slug": "module-dynamic-list",
+      "title": "Dynamic List",
+      "file": "pages/module-dynamic-list.md"
+    },
+    {
+      "slug": "module-dynamic-weather",
+      "title": "Dynamic Weather",
+      "file": "pages/module-dynamic-weather.md"
+    },
+    {
+      "slug": "module-energy-display",
+      "title": "Energy Display",
+      "file": "pages/module-energy-display.md"
+    },
+    {
+      "slug": "module-fan",
+      "title": "Fan",
+      "file": "pages/module-fan.md"
+    },
+    {
+      "slug": "faq-and-troubleshooting",
+      "title": "FAQ and Troubleshooting",
+      "file": "pages/faq-and-troubleshooting.md"
+    },
+    {
+      "slug": "module-gauge",
+      "title": "Gauge",
+      "file": "pages/module-gauge.md"
+    },
+    {
+      "slug": "module-graphs",
+      "title": "Graphs",
+      "file": "pages/module-graphs.md"
+    },
+    {
+      "slug": "module-grid",
+      "title": "Grid",
+      "file": "pages/module-grid.md"
+    },
+    {
+      "slug": "module-horizontal",
+      "title": "Horizontal Layout",
+      "file": "pages/module-horizontal.md"
+    },
+    {
+      "slug": "module-icon",
+      "title": "Icon",
+      "file": "pages/module-icon.md"
+    },
+    {
+      "slug": "module-image",
+      "title": "Image",
+      "file": "pages/module-image.md"
+    },
+    {
+      "slug": "module-info",
+      "title": "Info",
+      "file": "pages/module-info.md"
+    },
+    {
+      "slug": "module-input-modules",
+      "title": "Input Modules",
+      "file": "pages/module-input-modules.md"
+    },
+    {
+      "slug": "installation",
+      "title": "Installation",
+      "file": "pages/installation.md"
+    },
+    {
+      "slug": "layout-system",
+      "title": "Layout System",
+      "file": "pages/layout-system.md"
+    },
+    {
+      "slug": "module-light",
+      "title": "Light",
+      "file": "pages/module-light.md"
+    },
+    {
+      "slug": "module-living-canvas",
+      "title": "Living Canvas",
+      "file": "pages/module-living-canvas.md"
+    },
+    {
+      "slug": "module-lock",
+      "title": "Lock",
+      "file": "pages/module-lock.md"
+    },
+    {
+      "slug": "logic-and-conditions",
+      "title": "Logic and Conditions",
+      "file": "pages/logic-and-conditions.md"
+    },
+    {
+      "slug": "module-map",
+      "title": "Map",
+      "file": "pages/module-map.md"
+    },
+    {
+      "slug": "module-markdown",
+      "title": "Markdown",
+      "file": "pages/module-markdown.md"
+    },
+    {
+      "slug": "module-media-player",
+      "title": "Media Player",
+      "file": "pages/module-media-player.md"
+    },
+    {
+      "slug": "modules-overview",
+      "title": "Modules Overview",
+      "file": "pages/modules-overview.md"
+    },
+    {
+      "slug": "module-native-card",
+      "title": "Native HA Card",
+      "file": "pages/module-native-card.md"
+    },
+    {
+      "slug": "module-navigation",
+      "title": "Navigation",
+      "file": "pages/module-navigation.md"
+    },
+    {
+      "slug": "module-pagebreak",
+      "title": "Page Break",
+      "file": "pages/module-pagebreak.md"
+    },
+    {
+      "slug": "module-people",
+      "title": "People",
+      "file": "pages/module-people.md"
+    },
+    {
+      "slug": "module-popup",
+      "title": "Popup",
+      "file": "pages/module-popup.md"
+    },
+    {
+      "slug": "presets-and-marketplace",
+      "title": "Presets and Marketplace",
+      "file": "pages/presets-and-marketplace.md"
+    },
+    {
+      "slug": "pro-and-cloud",
+      "title": "Pro and Cloud",
+      "file": "pages/pro-and-cloud.md"
+    },
+    {
+      "slug": "module-qr-code",
+      "title": "QR Code",
+      "file": "pages/module-qr-code.md"
+    },
+    {
+      "slug": "quick-start",
+      "title": "Quick Start",
+      "file": "pages/quick-start.md"
+    },
+    {
+      "slug": "release-notes",
+      "title": "Release Notes",
+      "file": "pages/release-notes.md"
+    },
+    {
+      "slug": "module-screensaver",
+      "title": "Screensaver",
+      "file": "pages/module-screensaver.md"
+    },
+    {
+      "slug": "module-separator",
+      "title": "Separator",
+      "file": "pages/module-separator.md"
+    },
+    {
+      "slug": "module-slider-control",
+      "title": "Slider Control",
+      "file": "pages/module-slider-control.md"
+    },
+    {
+      "slug": "module-slider",
+      "title": "Slider Layout",
+      "file": "pages/module-slider.md"
+    },
+    {
+      "slug": "module-solar-analytics",
+      "title": "Solar Analytics",
+      "file": "pages/module-solar-analytics.md"
+    },
+    {
+      "slug": "module-spinbox",
+      "title": "Spinbox",
+      "file": "pages/module-spinbox.md"
+    },
+    {
+      "slug": "module-sports-score",
+      "title": "Sports Score",
+      "file": "pages/module-sports-score.md"
+    },
+    {
+      "slug": "module-status-summary",
+      "title": "Status Summary",
+      "file": "pages/module-status-summary.md"
+    },
+    {
+      "slug": "module-tabs",
+      "title": "Tabs",
+      "file": "pages/module-tabs.md"
+    },
+    {
+      "slug": "templates-and-jinja",
+      "title": "Templates and Jinja",
+      "file": "pages/templates-and-jinja.md"
+    },
+    {
+      "slug": "module-text",
+      "title": "Text",
+      "file": "pages/module-text.md"
+    },
+    {
+      "slug": "the-editor",
+      "title": "The Editor",
+      "file": "pages/the-editor.md"
+    },
+    {
+      "slug": "module-timer",
+      "title": "Timer",
+      "file": "pages/module-timer.md"
+    },
+    {
+      "slug": "module-toggle",
+      "title": "Toggle",
+      "file": "pages/module-toggle.md"
+    },
+    {
+      "slug": "translations",
+      "title": "Translations",
+      "file": "pages/translations.md"
+    },
+    {
+      "slug": "module-vacuum",
+      "title": "Vacuum Control",
+      "file": "pages/module-vacuum.md"
+    },
+    {
+      "slug": "module-vertical",
+      "title": "Vertical Layout",
+      "file": "pages/module-vertical.md"
+    },
+    {
+      "slug": "module-video-background",
+      "title": "Video Background",
+      "file": "pages/module-video-background.md"
+    },
+    {
+      "slug": "module-virtual-pet",
+      "title": "Virtual Pet",
+      "file": "pages/module-virtual-pet.md"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Getting Started",
+      "slugs": [
+        "installation",
+        "quick-start",
+        "the-editor",
+        "faq-and-troubleshooting"
+      ],
+      "subsections": []
+    },
+    {
+      "title": "Core Concepts",
+      "slugs": [
+        "layout-system",
+        "logic-and-conditions",
+        "templates-and-jinja",
+        "actions",
+        "design-system",
+        "custom-variables",
+        "presets-and-marketplace",
+        "pro-and-cloud"
+      ],
+      "subsections": []
+    },
+    {
+      "title": "Modules",
+      "slugs": [
+        "modules-overview",
+        "module-text",
+        "module-icon",
+        "module-info",
+        "module-image",
+        "module-markdown",
+        "module-bar",
+        "module-gauge",
+        "module-graphs",
+        "module-camera",
+        "module-map",
+        "module-qr-code",
+        "module-badge-of-honor",
+        "module-area-summary",
+        "module-alert-center",
+        "module-status-summary",
+        "module-activity-feed",
+        "module-calendar",
+        "module-sports-score",
+        "module-people",
+        "module-solar-analytics",
+        "module-energy-display",
+        "module-grid",
+        "module-button",
+        "module-toggle",
+        "module-spinbox",
+        "module-dropdown",
+        "module-light",
+        "module-climate",
+        "module-cover",
+        "module-fan",
+        "module-lock",
+        "module-vacuum",
+        "module-media-player",
+        "module-slider-control",
+        "module-timer",
+        "module-alarm-panel",
+        "module-virtual-pet",
+        "module-horizontal",
+        "module-vertical",
+        "module-tabs",
+        "module-accordion",
+        "module-popup",
+        "module-slider",
+        "module-pagebreak",
+        "module-separator",
+        "module-navigation",
+        "module-dynamic-list",
+        "module-background",
+        "module-video-background",
+        "module-dynamic-weather",
+        "module-living-canvas",
+        "module-screensaver",
+        "module-animated-clock",
+        "module-animated-weather",
+        "module-animated-forecast",
+        "module-input-modules",
+        "module-native-card",
+        "module-3rd-party-card"
+      ],
+      "subsections": []
+    },
+    {
+      "title": "Reference",
+      "slugs": [
+        "architecture",
+        "development",
+        "translations",
+        "release-notes"
+      ],
+      "subsections": []
+    }
+  ]
+}

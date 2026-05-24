@@ -1,0 +1,1298 @@
+[
+  {
+    "slug": "home",
+    "title": "Ultra Card Wiki",
+    "excerpt": "Ultra Card is a visual, modular card builder for Home Assistant Lovelace dashboards. Build professional dashboards without writing YAML — drag and drop modules, conditional logic, Jinja2 templates, an",
+    "headings": [
+      "Ultra Card Wiki",
+      "Get Started",
+      "What Ultra Card gives you",
+      "Project layout (1-minute orientation)",
+      "License & credits"
+    ]
+  },
+  {
+    "slug": "module-3rd-party-card",
+    "title": "3rd Party Card",
+    "excerpt": "Module type: external_card · Category: Interactive · Free Embed any 3rd party Home Assistant card — Bubble Card, Mushroom Cards, ApexCharts, Mini Graph Card, Vacuum Card, anything from HACS — inside a",
+    "headings": [
+      "3rd Party Card",
+      "Why",
+      "Configuration",
+      "Card type",
+      "Card config",
+      "Logic / Design",
+      "Detection",
+      "Notes",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-accordion",
+    "title": "Accordion",
+    "excerpt": "Module type: accordion · Category: Layout · Free Collapsible container with a customizable header. Tap the header to expand or collapse the nested modules. Custom header — text, icon, color, alignment",
+    "headings": [
+      "Accordion",
+      "Features",
+      "Configuration",
+      "Header",
+      "Behavior",
+      "Contents",
+      "Logic / Design",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "actions",
+    "title": "Actions",
+    "excerpt": "The Actions tab on every module / row / card lets you wire up interactions — what happens on tap, hold, or double tap. Each block can have three independent action configurations: | Trigger | When | |",
+    "headings": [
+      "Actions",
+      "Three triggers",
+      "Action types",
+      "`default` — module decides",
+      "`toggle`",
+      "`more-info`",
+      "`navigate`",
+      "`url`",
+      "`perform-action`",
+      "`assist`",
+      "`nothing`",
+      "Confirmation dialogs",
+      "Targets and data",
+      "Per-button actions vs container actions",
+      "Global card action",
+      "Examples",
+      "Tap = toggle, hold = more-info",
+      "Trigger an automation with a confirmation",
+      "Open Sonos UI on double-tap",
+      "Send Assist command with custom pipeline",
+      "Programmatic action service"
+    ]
+  },
+  {
+    "slug": "module-activity-feed",
+    "title": "Activity Feed",
+    "excerpt": "Module type: activity_feed · Category: Data · Pro Real time home activity feed with timeline and social views. Subscribes to entity state changes and renders them as a timeline. Two layouts: timeline ",
+    "headings": [
+      "Activity Feed",
+      "Features",
+      "Configuration",
+      "Sources",
+      "Display",
+      "Per-entity rules",
+      "Actions / Logic / Design",
+      "Examples",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-alarm-panel",
+    "title": "Alarm Panel",
+    "excerpt": "Module type: alarm_panel · Category: Interactive · Pro Arm, disarm, and monitor your security alarm with a PIN pad and status ring. 10 key PIN pad Status ring with color coded modes (disarmed, armed_h",
+    "headings": [
+      "Alarm Panel",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Modes",
+      "Actions / Logic / Design",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-alert-center",
+    "title": "Alert Center",
+    "excerpt": "Module type: alert_center · Category: Data · Free Active Home Assistant alerts in one prioritized card. alert. entities (the HA alert: integration) binary_sensor. with alert relevant device_class (smo",
+    "headings": [
+      "Alert Center",
+      "What it monitors",
+      "Options",
+      "Behavior",
+      "Examples",
+      "Critical-only mode",
+      "Always-visible status board",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-animated-clock",
+    "title": "Animated Clock",
+    "excerpt": "Module type: animated_clock · Category: Content · Pro A flip clock with smooth animations — digits roll over with a satisfying flip motion. 12 hour or 24 hour format Optional seconds Custom date below",
+    "headings": [
+      "Animated Clock",
+      "Features",
+      "Configuration",
+      "Format",
+      "Style",
+      "Logic / Design",
+      "Examples",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-animated-forecast",
+    "title": "Animated Forecast",
+    "excerpt": "Module type: animated_forecast · Category: Content · Pro Multi day weather forecast with animated icons. Configurable number of days (1–10) Animated icons per day High / low temperature Precipitation ",
+    "headings": [
+      "Animated Forecast",
+      "Features",
+      "Configuration",
+      "Source",
+      "Display",
+      "Style",
+      "Logic / Design",
+      "Examples",
+      "Notes",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-animated-weather",
+    "title": "Animated Weather",
+    "excerpt": "Module type: animated_weather · Category: Content · Pro Current conditions weather display with animated icons (rain falls, snow swirls, sun rotates, lightning flashes). Animated weather icons matchin",
+    "headings": [
+      "Animated Weather",
+      "Features",
+      "Configuration",
+      "Source",
+      "Display",
+      "Style",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "architecture",
+    "title": "Architecture",
+    "excerpt": "A high level tour of how Ultra Card is built. Useful if you're contributing, debugging, or just curious. | Area | Tech | | | | | UI framework | [Lit 3](https://lit.dev/) (web components) | | Language ",
+    "headings": [
+      "Architecture",
+      "Tech stack",
+      "High-level structure",
+      "Module system",
+      "Manifest",
+      "Registry",
+      "Base class",
+      "Lazy loading",
+      "Service layer",
+      "Editor",
+      "Config schema",
+      "Migration",
+      "Trust model & content origin",
+      "Performance design",
+      "Where to learn more"
+    ]
+  },
+  {
+    "slug": "module-area-summary",
+    "title": "Area / Room Summary",
+    "excerpt": "Module type: area_summary · Category: Data · Free A smart room tile that auto discovers entities by Home Assistant Area and renders them as quick action shortcuts. The fastest way to build a \"rooms\" d",
+    "headings": [
+      "Area / Room Summary",
+      "What it does",
+      "Setup",
+      "Options",
+      "Style presets",
+      "Actions",
+      "Troubleshooting",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-background",
+    "title": "Background",
+    "excerpt": "Module type: background · Category: Media · Free Add custom background images to your dashboard view. Renders behind everything else as a full card or full view background. Upload image, URL, or entit",
+    "headings": [
+      "Background",
+      "Features",
+      "Configuration",
+      "Source",
+      "Layout",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-badge-of-honor",
+    "title": "Badge of Honor",
+    "excerpt": "Module type: badge_of_honor · Category: Content · Pro Animated Pro membership badge with rotating text and gradient effects. A small, fun status indicator that lights up when you're signed into a Pro ",
+    "headings": [
+      "Badge of Honor",
+      "Configuration",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-bar",
+    "title": "Bar",
+    "excerpt": "Module type: bar · Category: Data · Free Progress bars with animations, gradients, side labels, and template support. | Source | Notes | | | | | Entity (0–100) | Direct percentage from a sensor. | | E",
+    "headings": [
+      "Bar",
+      "Data sources",
+      "Configuration",
+      "Appearance",
+      "Colors & gradients",
+      "Labels",
+      "Animations",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-button",
+    "title": "Button",
+    "excerpt": "Module type: button · Category: Interactive · Free Interactive buttons with multiple visual styles, icons, and three way action configurations (tap / hold / double tap). flat · glossy · embossed · gra",
+    "headings": [
+      "Button",
+      "Visual styles",
+      "Features",
+      "Configuration",
+      "Basic",
+      "Icon",
+      "Colors",
+      "Hover effects",
+      "Actions",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-calendar",
+    "title": "Calendar",
+    "excerpt": "Module type: calendar · Category: Data · Pro Display calendar events with multiple view options. Pull events from any HA calendar. entity (Google, CalDAV, Local, etc.) Multiple views: month , week , d",
+    "headings": [
+      "Calendar",
+      "Features",
+      "Configuration",
+      "Calendars",
+      "View",
+      "Display",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-camera",
+    "title": "Camera",
+    "excerpt": "Module type: camera · Category: Content · Free Live camera feeds with controls, crop, name overlay, and template based camera switching. Live streams via the HA stream integration Still image mode wit",
+    "headings": [
+      "Camera",
+      "Features",
+      "Configuration",
+      "Camera",
+      "Display",
+      "Dimensions",
+      "Name position",
+      "Crop",
+      "Template mode",
+      "Examples",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-climate",
+    "title": "Climate",
+    "excerpt": "Module type: climate · Category: Interactive · Pro Interactive circular thermostat for HA climate. entities. Circular dial with current temperature, target temperature, and HVAC mode indicator Drag to",
+    "headings": [
+      "Climate",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Colors",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-cover",
+    "title": "Cover",
+    "excerpt": "Module type: cover · Category: Interactive · Free Modern control for cover. entities — blinds, garage doors, shutters, awnings. Open / close / stop buttons Position slider (where supported) Tilt slide",
+    "headings": [
+      "Cover",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "custom-variables",
+    "title": "Custom Variables",
+    "excerpt": "Ultra Card has its own variable system, separate from but compatible with HA theme variables. Define a variable once at the card level and reference it anywhere in the card. Three big reasons: 1. Sing",
+    "headings": [
+      "Custom Variables",
+      "Why custom variables?",
+      "Where you define them",
+      "Where you use them",
+      "Example: theme palette",
+      "Example: room reuse",
+      "Example: numeric token",
+      "Variables in templates",
+      "Cloud-synced favorites",
+      "Best practices"
+    ]
+  },
+  {
+    "slug": "design-system",
+    "title": "Design System",
+    "excerpt": "The Design tab is the visual styling surface. It exists at three levels — global card, per row/column, and per module — and they all share the same controls. Background color (Ultra Card color picker ",
+    "headings": [
+      "Design System",
+      "Anatomy of the Design tab",
+      "Background",
+      "Spacing",
+      "Border",
+      "Shadow",
+      "Typography",
+      "Hover effects",
+      "Animations",
+      "Three levels of Design",
+      "Color picker",
+      "Responsive overrides",
+      "Typography defaults",
+      "Global CSS",
+      "Best practices"
+    ]
+  },
+  {
+    "slug": "development",
+    "title": "Development",
+    "excerpt": "How to set up Ultra Card locally, run the dev workflow, and contribute changes. TL;DR: clone, npm install , npm run watch:ha . See below for full workflow. Node.js ≥ 20 (20 LTS recommended) npm (bundl",
+    "headings": [
+      "Development",
+      "Prerequisites",
+      "Clone & install",
+      "Dev workflow — fast iteration (~10–15 sec)",
+      "Browser cache (one-time)",
+      "Available scripts",
+      "Project structure",
+      "Adding a module",
+      "Sidebar panel and the Pro Cloud integration",
+      "Releasing",
+      "or for a beta:",
+      "Code style",
+      "Translations",
+      "Where to ask for help"
+    ]
+  },
+  {
+    "slug": "module-dropdown",
+    "title": "Dropdown",
+    "excerpt": "Module type: dropdown · Category: Interactive · Free Interactive dropdown selector — each option has its own label, icon, and action. Great for scenes, modes, sources, or anything from a finite list. ",
+    "headings": [
+      "Dropdown",
+      "Features",
+      "Configuration",
+      "Options",
+      "Trigger",
+      "Behavior",
+      "Actions / Logic / Design",
+      "Examples",
+      "Scene picker",
+      "Media source switcher",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-dynamic-list",
+    "title": "Dynamic List",
+    "excerpt": "Module type: dynamic list · Category: Layout · Free Generate a list of modules dynamically using a Jinja2 template. The most powerful module in Ultra Card — anything that's a list of similar things, t",
+    "headings": [
+      "Dynamic List",
+      "How it works",
+      "Configuration",
+      "Template",
+      "Layout wrapper",
+      "Re-evaluation",
+      "Logic / Design",
+      "Examples",
+      "One Info per door sensor",
+      "One Slider Control per dimmable light in the area",
+      "One People card per family member",
+      "Notes",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-dynamic-weather",
+    "title": "Dynamic Weather",
+    "excerpt": "Module type: dynamic_weather · Category: Media · Pro Animated weather effects (rain, snow, fog, sun beams) overlaid on your dashboard view. Rain — varying intensity, drop size, wind angle Snow — flake",
+    "headings": [
+      "Dynamic Weather",
+      "Features",
+      "Configuration",
+      "Source",
+      "Per-effect",
+      "Display",
+      "Logic / Design",
+      "Examples",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-energy-display",
+    "title": "Energy Display",
+    "excerpt": "Module type: energy_display · Category: Data · Pro Visualize energy flow between grid, solar, battery, home, and devices — Sankey style. Source / sink nodes for grid, solar, battery, home loads, indiv",
+    "headings": [
+      "Energy Display",
+      "Features",
+      "Configuration",
+      "Nodes",
+      "Display",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-fan",
+    "title": "Fan",
+    "excerpt": "Module type: fan · Category: Interactive · Free Modern fan control with speed slider, preset modes, oscillation, and direction. Speed control — slider + percentage Preset modes ( auto , eco , turbo , ",
+    "headings": [
+      "Fan",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "faq-and-troubleshooting",
+    "title": "FAQ and Troubleshooting",
+    "excerpt": "Common questions and fixes. If your issue isn't here, ask on [Discord](https://discord.gg/6xVgHxzzBV) or open a [GitHub issue](https://github.com/WJDDesigns/Ultra Card/issues). HACS install: confirm U",
+    "headings": [
+      "FAQ and Troubleshooting",
+      "Installation",
+      "\"Custom: Ultra Card\" doesn't appear in Add card",
+      "\"Cannot find module\" or modules render as red error blocks",
+      "Updated Ultra Card but still seeing the old version",
+      "Editor",
+      "Live preview is laggy / sluggish",
+      "Module setting doesn't seem to save",
+      "\"Could not load area\" on Area Summary",
+      "Logic & templates",
+      "Template doesn't update live",
+      "Logic shows the module then immediately hides it",
+      "\"Show 5 of 5 lights on\" template gives the wrong count",
+      "Pro / Cloud",
+      "Pro modules show \"Sign in to use\"",
+      "Sidebar Hub is missing",
+      "Cloud sync paused / errors",
+      "Performance",
+      "High CPU on the dashboard tab",
+      "Modules flicker when scrolling",
+      "Bundle is large to download",
+      "Layout",
+      "Two columns on desktop, one on mobile",
+      "Module overflow on mobile",
+      "Dragging is jumpy",
+      "YAML / config",
+      "My imported config has wrong colors",
+      "My export contains entity IDs I want stripped",
+      "Documentation link goes to the homepage",
+      "Asking for help"
+    ]
+  },
+  {
+    "slug": "module-gauge",
+    "title": "Gauge",
+    "excerpt": "Module type: gauge · Category: Content · Free Display sensor values as customizable gauges with multiple styles, color modes, and pointer options. | Style | Look | | | | | Basic | Clean and simple | |",
+    "headings": [
+      "Gauge",
+      "Gauge styles",
+      "Pointer styles",
+      "Color modes",
+      "Value sources",
+      "Display options",
+      "Animations",
+      "Configuration example (YAML)",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-graphs",
+    "title": "Graphs",
+    "excerpt": "Module type: graphs · Category: Data · Free Historical data visualization with multiple chart types and customization. | Type | Best for | | | | | Line | Continuous trends over time | | Bar | Discrete",
+    "headings": [
+      "Graphs",
+      "Chart types",
+      "Data sources",
+      "Display options",
+      "Chart options",
+      "Line chart options",
+      "Pie / donut options",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-grid",
+    "title": "Grid",
+    "excerpt": "Module type: grid · Category: Data · Free Display entities in a customizable grid of tiles — quick way to render \"all my lights\" or \"all sensors in the kitchen\" without manually placing each module. M",
+    "headings": [
+      "Grid",
+      "Features",
+      "Configuration",
+      "Entities",
+      "Layout",
+      "Tile style",
+      "State coloring",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-horizontal",
+    "title": "Horizontal Layout",
+    "excerpt": "Module type: horizontal · Category: Layout · Free Container module that arranges child modules side by side in a row, with flex alignment and gap controls. Place modules horizontally Flexible alignmen",
+    "headings": [
+      "Horizontal Layout",
+      "Features",
+      "Configuration",
+      "Layout",
+      "Gap",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-icon",
+    "title": "Icon",
+    "excerpt": "Module type: icon · Category: Interactive · Free Interactive status icons with state based styling, animations, and tap actions. State based display — different icon, color, size, and animation per ac",
+    "headings": [
+      "Icon",
+      "Features",
+      "Configuration",
+      "General",
+      "Animations",
+      "Template mode (advanced)",
+      "Actions",
+      "Logic / Design",
+      "Examples",
+      "Light toggle with pulse-on glow",
+      "Battery health",
+      "Security armed indicator",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-image",
+    "title": "Image",
+    "excerpt": "Module type: image · Category: Media · Free Display images with responsive sizing, hover effects, filters, and multiple source options. | Source | Use when | | | | | Upload | You have a local image fi",
+    "headings": [
+      "Image",
+      "Image sources",
+      "Sizing",
+      "Effects",
+      "Configuration",
+      "General",
+      "Design",
+      "Actions",
+      "Logic",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-info",
+    "title": "Info",
+    "excerpt": "Module type: info · Category: Data · Free Display entity information (state, name, units, attributes) with formatting and template support. Show entity state, name, and unit of measurement Optional MD",
+    "headings": [
+      "Info",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Icon",
+      "Template mode",
+      "Layout & sizing",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-input-modules",
+    "title": "Input Modules",
+    "excerpt": "Category: Input · Free Ultra Card includes nine input modules that bind directly to Home Assistant input_ and counter helpers, plus toggle / switch entities. They're the visual UI for HA's helper syst",
+    "headings": [
+      "Input Modules",
+      "Common configuration",
+      "General",
+      "Visual style",
+      "Behavior",
+      "Actions / Logic / Design",
+      "Per-module quirks",
+      "Text Input",
+      "Date/Time Input",
+      "Number Input",
+      "Slider Input",
+      "Select Input",
+      "Boolean Input",
+      "Button Input",
+      "Counter Input",
+      "Color Input",
+      "When to use vs. native HA cards",
+      "Examples"
+    ]
+  },
+  {
+    "slug": "installation",
+    "title": "Installation",
+    "excerpt": "Ultra Card is a custom Lovelace card. There are three supported installation paths: 1. HACS (recommended) — handles updates automatically. 2. Manual — for users who prefer to manage files themselves. ",
+    "headings": [
+      "Installation",
+      "1. HACS (recommended)",
+      "2. HACS custom repository (prereleases)",
+      "3. Manual install",
+      "Optional: Pro features",
+      "Verifying the install",
+      "Updating"
+    ]
+  },
+  {
+    "slug": "layout-system",
+    "title": "Layout System",
+    "excerpt": "Ultra Card's layout is a 3 level structure with full nesting through layout modules. UltraCard └── Row (multiple per card) └── Column (multiple per row) └── Module (multiple per column) └── (layout mo",
+    "headings": [
+      "Layout System",
+      "Rows",
+      "Columns",
+      "Column width modes",
+      "Modules",
+      "Nesting via layout modules",
+      "Responsive breakpoints",
+      "Global card properties",
+      "YAML structure (advanced)"
+    ]
+  },
+  {
+    "slug": "module-light",
+    "title": "Light",
+    "excerpt": "Module type: light · Category: Interactive · Free Advanced light control with color picker, color temperature, brightness, effects, and group support. Brightness slider (0–100% or custom range) Color ",
+    "headings": [
+      "Light",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Color customization",
+      "Actions",
+      "Logic / Design",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-living-canvas",
+    "title": "Living Canvas",
+    "excerpt": "Module type: living_canvas · Category: Media · Pro A full view WebGL background — like Dynamic Weather but for general purpose ambient art. Built on Three.js. Library of presets (aurora, plasma, parti",
+    "headings": [
+      "Living Canvas",
+      "Features",
+      "Configuration",
+      "Preset",
+      "Parameters",
+      "Entity drivers (optional)",
+      "Display",
+      "Logic / Design",
+      "Examples",
+      "Performance notes"
+    ]
+  },
+  {
+    "slug": "module-lock",
+    "title": "Lock",
+    "excerpt": "Module type: lock · Category: Interactive · Free Modern lock control with lock / unlock / open buttons (where supported). Lock / unlock buttons \"Open\" button (for lock.open capable devices) Status ind",
+    "headings": [
+      "Lock",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "logic-and-conditions",
+    "title": "Logic and Conditions",
+    "excerpt": "The Logic tab on every module / row / column / card lets you show or hide it based on Home Assistant state, time, or templates. This is one of Ultra Card's most powerful features — your dashboard can ",
+    "headings": [
+      "Logic and Conditions",
+      "How logic is evaluated",
+      "Condition types",
+      "1. Entity state",
+      "2. Entity attribute",
+      "3. Time",
+      "4. Template (Jinja2)",
+      "Hidden on devices",
+      "Visibility transitions",
+      "Global card logic",
+      "Examples",
+      "Hide low-battery info during charging",
+      "Show \"Good Morning\" greeting only between 5 AM and noon",
+      "Different layouts per device",
+      "Template: hide module if any door is open",
+      "Show alert tile only when a sensor crosses a threshold",
+      "Performance notes"
+    ]
+  },
+  {
+    "slug": "module-map",
+    "title": "Map",
+    "excerpt": "Module type: map · Category: Content · Free Interactive map with custom markers and location tracking, powered by Leaflet. Add multiple entities (people, devices, zones) as markers Custom marker icons",
+    "headings": [
+      "Map",
+      "Features",
+      "Configuration",
+      "Entities",
+      "View",
+      "Style",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-markdown",
+    "title": "Markdown",
+    "excerpt": "Module type: markdown · Category: Content · Free Rich text content with full markdown formatting. Headers, lists, links, emphasis, code blocks Optional HTML tags inside markdown Markdown table syntax ",
+    "headings": [
+      "Markdown",
+      "Features",
+      "Configuration",
+      "General",
+      "Design / Logic / Actions",
+      "Examples",
+      "Dashboard header",
+      "Welcome Home",
+      "Status list",
+      "System Status",
+      "Information panel with table",
+      "Quick info",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-media-player",
+    "title": "Media Player",
+    "excerpt": "Module type: media_player · Category: Interactive · Free Full featured media player control with album art, progress bar, playback controls, and animated visualizers. | Layout | Best for | | | | | Com",
+    "headings": [
+      "Media Player",
+      "Layout modes",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Behavior",
+      "Visual",
+      "Color customization",
+      "Icon customization",
+      "Spotify-specific features",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "modules-overview",
+    "title": "Modules Overview",
+    "excerpt": "Ultra Card ships 74 modules organized into seven categories. Every module has the same 4 tab editor (General / Actions / Logic / Design), so once you've learned one you've learned them all. Pro module",
+    "headings": [
+      "Modules Overview",
+      "Content",
+      "Data",
+      "Interactive",
+      "Layout",
+      "Media / Background",
+      "Animated (Pro)",
+      "Inputs (Helpers)",
+      "Card embeds",
+      "Picking the right module",
+      "Source of truth"
+    ]
+  },
+  {
+    "slug": "module-native-card",
+    "title": "Native HA Card",
+    "excerpt": "Module type: native_card · Category: Content · Free Embed any built in Home Assistant card inside an Ultra Card layout — Entities card, Glance, Conditional, History Graph, Map, Markdown, etc. You get ",
+    "headings": [
+      "Native HA Card",
+      "Why",
+      "Configuration",
+      "Card type",
+      "Card config",
+      "Logic / Design",
+      "Notes",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-navigation",
+    "title": "Navigation",
+    "excerpt": "Module type: navigation · Category: Layout · Free A global navigation bar with routes, popups, and media player controls. Best used at the top or bottom of a card to provide app like navigation across",
+    "headings": [
+      "Navigation",
+      "Features",
+      "Configuration",
+      "Items",
+      "Behavior",
+      "Style",
+      "Embedded controls",
+      "Logic / Design",
+      "Routes & active state",
+      "JS templates (`[[[ ... ]]]`)",
+      "Examples"
+    ]
+  },
+  {
+    "slug": "module-pagebreak",
+    "title": "Page Break",
+    "excerpt": "Module type: pagebreak · Category: Layout · Free A separator that splits content into pages inside a Module Slider . It has no visible output of its own — it's a marker. The Page Break has no settings",
+    "headings": [
+      "Page Break",
+      "Configuration",
+      "Usage",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-people",
+    "title": "People",
+    "excerpt": "Module type: people · Category: Data · Free Display person information with customizable data items — presence, location, battery, last seen, and any custom attribute. Multi person grid or list Avatar",
+    "headings": [
+      "People",
+      "Features",
+      "Configuration",
+      "People",
+      "Display",
+      "Per-data-item",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-popup",
+    "title": "Popup",
+    "excerpt": "Module type: popup · Category: Layout · Free Modal popup container with a customizable trigger and nested content. Trigger element — button, icon, or template rendered HTML Modal content — any modules",
+    "headings": [
+      "Popup",
+      "Features",
+      "Configuration",
+      "Trigger",
+      "Popup",
+      "Contents",
+      "Logic / Design",
+      "Programmatic open / close",
+      "Examples"
+    ]
+  },
+  {
+    "slug": "presets-and-marketplace",
+    "title": "Presets and Marketplace",
+    "excerpt": "Presets let you save modules, rows, or entire cards as reusable templates and share them with the community. 1. In the editor, hover over any module / row / column → click the save preset icon. 2. Giv",
+    "headings": [
+      "Presets and Marketplace",
+      "Local presets",
+      "Saving a preset",
+      "Using a saved preset",
+      "Managing local presets",
+      "The Marketplace",
+      "Browsing",
+      "Installing",
+      "Submitting",
+      "Reporting / quality",
+      "How presets are stored",
+      "Variable mapping when installing",
+      "Preset wizard",
+      "Versioning",
+      "Best practices for preset authors"
+    ]
+  },
+  {
+    "slug": "pro-and-cloud",
+    "title": "Pro and Cloud",
+    "excerpt": "Ultra Card is MIT licensed and free — every core module, the editor, presets, and conditional logic work without an account. Pro adds cloud backed features and a handful of premium modules. Everything",
+    "headings": [
+      "Pro and Cloud",
+      "What's free",
+      "What Pro adds",
+      "Setup",
+      "1. UltraCard.io account",
+      "2. Ultra Card Pro Cloud integration",
+      "Cloud sync",
+      "Backups & snapshots",
+      "Privacy & data",
+      "Troubleshooting Pro"
+    ]
+  },
+  {
+    "slug": "module-qr-code",
+    "title": "QR Code",
+    "excerpt": "Module type: qr_code · Category: Content · Pro Generate QR codes from URL, plain text, template output, or entity state. | Source | Use | | | | | URL | Encode a static URL. | | Text | Encode arbitrary",
+    "headings": [
+      "QR Code",
+      "Sources",
+      "Customization",
+      "Examples",
+      "Tips",
+      "License"
+    ]
+  },
+  {
+    "slug": "quick-start",
+    "title": "Quick Start",
+    "excerpt": "This page walks you through building your first Ultra Card in five minutes. Prerequisite: Ultra Card is installed. See Installation if not. 1. Open a Lovelace dashboard, click Edit dashboard (top righ",
+    "headings": [
+      "Quick Start",
+      "1. Add an Ultra Card to a dashboard",
+      "2. Add your first row + column + module",
+      "3. Configure the module — the 4 tabs",
+      "4. Try a real example",
+      "5. Multiple cards at once",
+      "6. Save & share",
+      "Where to next?"
+    ]
+  },
+  {
+    "slug": "release-notes",
+    "title": "Release Notes",
+    "excerpt": "Full release notes are maintained in [ RELEASE_NOTES.md ](https://github.com/WJDDesigns/Ultra Card/blob/main/RELEASE_NOTES.md) at the root of the repository. They're kept in the source so they can be ",
+    "headings": [
+      "Release Notes",
+      "Where to find releases",
+      "Versioning",
+      "Migration & compatibility",
+      "Changelogs"
+    ]
+  },
+  {
+    "slug": "module-screensaver",
+    "title": "Screensaver",
+    "excerpt": "Module type: screensaver · Category: Media · Pro Kiosk screensaver that activates after idle, with clock, weather, and image slideshow. Activates after a configurable idle timeout Cleared by tap / cli",
+    "headings": [
+      "Screensaver",
+      "Features",
+      "Configuration",
+      "Activation",
+      "Elements",
+      "Display",
+      "Logic / Design",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-separator",
+    "title": "Separator",
+    "excerpt": "Module type: separator · Category: Content · Free Visual dividers and spacers for organizing dashboard layouts. | Style | Look | | | | | Solid line | Simple straight line. | | Double line | Two parall",
+    "headings": [
+      "Separator",
+      "Styles",
+      "Configuration",
+      "Appearance",
+      "Text (optional)",
+      "Spacer mode",
+      "Logic / Design",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-slider-control",
+    "title": "Slider Control",
+    "excerpt": "Module type: slider_control · Category: Interactive · Free A premium, customizable slider for any controllable entity — lights, covers, fans, climate, input numbers. Light — brightness or color temper",
+    "headings": [
+      "Slider Control",
+      "Supported entities",
+      "Layout modes",
+      "Overlay",
+      "Split",
+      "Slider styles (11)",
+      "Display elements",
+      "Toggle integration",
+      "Advanced",
+      "YAML examples",
+      "Light brightness",
+      "Cover position with split layout",
+      "Climate temperature",
+      "Vertical desk lamp",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-slider",
+    "title": "Slider Layout",
+    "excerpt": "Module type: slider · Category: Layout · Free Carousel/slideshow container — multiple pages of nested modules, swipeable on mobile, navigated via dots / arrows / auto play. Multiple pages of modules (",
+    "headings": [
+      "Slider Layout",
+      "Features",
+      "Configuration",
+      "Behavior",
+      "Pagination",
+      "Logic / Design",
+      "Examples",
+      "Related",
+      "Implementation"
+    ]
+  },
+  {
+    "slug": "module-solar-analytics",
+    "title": "Solar Analytics",
+    "excerpt": "Module type: solar_analytics · Category: Data · Pro Live solar power, grid balance, battery state, and daily energy totals in one glanceable widget. Real time solar production (W / kW) Grid import vs.",
+    "headings": [
+      "Solar Analytics",
+      "Features",
+      "Configuration",
+      "Entities",
+      "Display",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-spinbox",
+    "title": "Spinbox",
+    "excerpt": "Module type: spinbox · Category: Interactive · Free Number input with increment / decrement buttons and a center value display. − / + buttons that step a value Configurable step size, min, max Bind to",
+    "headings": [
+      "Spinbox",
+      "Features",
+      "Configuration",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-sports-score",
+    "title": "Sports Score",
+    "excerpt": "Module type: sports_score · Category: Data · Pro Live sports scores, upcoming games, and team info for your favorite teams. NFL (American football) NBA (basketball) MLB (baseball) NHL (hockey) Soccer ",
+    "headings": [
+      "Sports Score",
+      "Supported leagues",
+      "Features",
+      "Configuration",
+      "Teams",
+      "Display",
+      "Actions / Logic / Design",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-status-summary",
+    "title": "Status Summary",
+    "excerpt": "Module type: status_summary · Category: Data · Free Display entity activity with timestamps and customizable color coding. Designed as a compact \"what changed recently\" panel. Add multiple entities, e",
+    "headings": [
+      "Status Summary",
+      "Features",
+      "Configuration",
+      "Entities",
+      "Display",
+      "Actions / Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-tabs",
+    "title": "Tabs",
+    "excerpt": "Module type: tabs · Category: Layout · Free Tabbed container — multiple sections, only one visible at a time, switchable via tab strip. Multiple tabs, each with label, icon, and contents Tab strip at ",
+    "headings": [
+      "Tabs",
+      "Features",
+      "Configuration",
+      "Tabs",
+      "Strip",
+      "Behavior",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "templates-and-jinja",
+    "title": "Templates and Jinja",
+    "excerpt": "Ultra Card has full support for Home Assistant Jinja2 templates . Templates are evaluated by HA itself via the render_template WebSocket subscription, so they always reflect live state and have access",
+    "headings": [
+      "Templates and Jinja",
+      "Where templates work",
+      "Template editor",
+      "Common patterns",
+      "State value with formatting",
+      "Conditional content",
+      "Time-of-day greeting",
+      "Loop summary",
+      "Color from state",
+      "State-driven icon",
+      "Dynamic camera switching",
+      "Dynamic List — generate one Info module per door",
+      "HA template features that work",
+      "Custom variables in templates",
+      "Caching & performance",
+      "Navigation JS templates (sandboxed, gated)",
+      "Troubleshooting templates"
+    ]
+  },
+  {
+    "slug": "module-text",
+    "title": "Text",
+    "excerpt": "Module type: text · Category: Content · Free The Text module displays static or template driven text with full typography control. Renders a string of text. The string can be: Static — a literal strin",
+    "headings": [
+      "Text",
+      "What it does",
+      "Configuration",
+      "General",
+      "Design",
+      "Actions",
+      "Logic",
+      "Examples",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "the-editor",
+    "title": "The Editor",
+    "excerpt": "Ultra Card has a single visual editor, divided into selector tabs at the top and a module tab strip at the bottom of each module's editor. | Tab | Purpose | | | | | Layout | Drag and drop builder — ad",
+    "headings": [
+      "The Editor",
+      "Selector tabs (top of the editor)",
+      "Module editor — the 4 tabs",
+      "General",
+      "Actions",
+      "Logic",
+      "Design",
+      "Live preview",
+      "Responsive editing",
+      "Keyboard / drag conventions",
+      "Editing in YAML"
+    ]
+  },
+  {
+    "slug": "module-timer",
+    "title": "Timer",
+    "excerpt": "Module type: timer · Category: Interactive · Free Countdown timer with optional action when time runs out. Bind to a HA timer. helper, or run a free standing timer. Countdown display (HH:MM:SS or MM:S",
+    "headings": [
+      "Timer",
+      "Features",
+      "Configuration",
+      "Source",
+      "Display",
+      "Action on expiry",
+      "Actions / Logic / Design",
+      "Examples"
+    ]
+  },
+  {
+    "slug": "module-toggle",
+    "title": "Toggle",
+    "excerpt": "Module type: toggle · Category: Interactive · Free Interactive toggles and multi state switchers with custom actions per state. Binary toggle — classic on/off switch styled to match your dashboard Mul",
+    "headings": [
+      "Toggle",
+      "Features",
+      "Configuration",
+      "Mode",
+      "Binary mode",
+      "Segmented mode",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "translations",
+    "title": "Translations",
+    "excerpt": "Help make Ultra Card accessible worldwide. PRs welcome from anyone. | Code | Language | | | | | ca | Catalan | | cs | Czech | | da | Danish | | de | German | | en GB | British English | | en | English",
+    "headings": [
+      "Translations",
+      "Currently supported",
+      "How to contribute",
+      "Option 1 — GitHub web UI (easiest)",
+      "Option 2 — Fork & clone",
+      "edit src/translations/<lang>.json",
+      "Rules",
+      "DO",
+      "DON'T",
+      "Example",
+      "Adding a new language",
+      "PR title conventions",
+      "Helpful scripts",
+      "Recognition"
+    ]
+  },
+  {
+    "slug": "module-vacuum",
+    "title": "Vacuum Control",
+    "excerpt": "Module type: vacuum · Category: Interactive · Pro Interactive vacuum control with map, stats, and animations. Start / pause / stop / return to base / locate buttons Live map (where the integration pro",
+    "headings": [
+      "Vacuum Control",
+      "Features",
+      "Configuration",
+      "Entity",
+      "Display",
+      "Custom commands",
+      "Actions / Logic / Design",
+      "Tips"
+    ]
+  },
+  {
+    "slug": "module-vertical",
+    "title": "Vertical Layout",
+    "excerpt": "Module type: vertical · Category: Layout · Free Container module that stacks child modules vertically with alignment and gap controls. Stack modules vertically Vertical alignment options Spacing betwe",
+    "headings": [
+      "Vertical Layout",
+      "Features",
+      "Configuration",
+      "Layout",
+      "Gap",
+      "Logic / Design",
+      "Examples",
+      "Related"
+    ]
+  },
+  {
+    "slug": "module-video-background",
+    "title": "Video Background",
+    "excerpt": "Module type: video_bg · Category: Media · Pro Dynamic video backgrounds for your dashboard view, from YouTube, Vimeo, or local MP4. Sources: YouTube , Vimeo , direct MP4 URL , Upload Mute (default), l",
+    "headings": [
+      "Video Background",
+      "Features",
+      "Configuration",
+      "Source",
+      "Behavior",
+      "Display",
+      "Logic / Design",
+      "Examples",
+      "Notes"
+    ]
+  },
+  {
+    "slug": "module-virtual-pet",
+    "title": "Virtual Pet",
+    "excerpt": "Module type: virtual_pet · Category: Interactive · Pro A digital pet whose mood is driven by your smart home data. Tamagotchi vibes, but the food is sensor.cpu_temperature . Animated pet sprite with m",
+    "headings": [
+      "Virtual Pet",
+      "Features",
+      "Configuration",
+      "Pet",
+      "Mood rules",
+      "Actions",
+      "Logic / Design",
+      "Examples",
+      "Notes"
+    ]
+  }
+]

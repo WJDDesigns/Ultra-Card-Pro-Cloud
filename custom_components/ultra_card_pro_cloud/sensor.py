@@ -87,6 +87,10 @@ class UltraCardProCloudAuthSensor(CoordinatorEntity, SensorEntity):
                 "authenticated": False,
                 "subscription_tier": "free",
                 "subscription_status": "expired",
+                "needs_reauth": bool(
+                    getattr(self.coordinator, "_reauth_requested", False)
+                ),
+                "last_poll": None,
             }
 
         subscription = self.coordinator.data.get("subscription", {})
@@ -106,6 +110,10 @@ class UltraCardProCloudAuthSensor(CoordinatorEntity, SensorEntity):
             "subscription_status": subscription.get("status", "expired"),
             "subscription_expires": subscription.get("expires"),
             "connected_at": self.coordinator.data.get("connected_at"),
+            "last_poll": self.coordinator.data.get("last_poll"),
+            "needs_reauth": bool(
+                getattr(self.coordinator, "_reauth_requested", False)
+            ),
             "features": subscription.get("features", {}),
         }
 

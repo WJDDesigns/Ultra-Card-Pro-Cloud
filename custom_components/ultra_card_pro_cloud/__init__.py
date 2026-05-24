@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import re
+import os
 import secrets
 from pathlib import Path
 
@@ -27,50 +27,16 @@ from .const import (
     PANEL_JS_URL,
     PANEL_STATIC_URL_PATH,
     PANEL_CUSTOM_ELEMENT,
+    PROXY_ALLOWED_METHODS,
+    is_proxy_url_allowed,
 )
 from .coordinator import UltraCardProCloudCoordinator
-
-
-def _safe_upload_filename(name: str) -> str:
-    """ASCII-only filename for multipart (avoids REST 400 on some WordPress setups)."""
-    s = re.sub(r"[^A-Za-z0-9._-]", "_", (name or "").strip())
-    return (s or "upload.png")[:180]
-
-
-def _normalize_proxy_payload(body: dict) -> dict | None:
-    """Extract inner proxy payload from HA HTTP/WS bodies (string JSON, nested body wrappers)."""
-    if not isinstance(body, dict):
-        return None
-    payload = body.get("body")
-    if payload is None and isinstance(body.get("data"), dict):
-        payload = body["data"]
-    if payload is None and "__media_upload_b64" in body:
-        payload = {"__media_upload_b64": body["__media_upload_b64"]}
-    if isinstance(payload, str):
-        try:
-            payload = json.loads(payload)
-        except Exception:
-            return None
-    if payload is None:
-        return None
-    if not isinstance(payload, dict):
-        return None
-    for _ in range(4):
-        if "__media_upload_b64" in payload:
-            return payload
-        if "body" in payload:
-            inner = payload["body"]
-            if isinstance(inner, str):
-                try:
-                    inner = json.loads(inner)
-                except Exception:
-                    return None
-            payload = inner
-            if not isinstance(payload, dict):
-                return None
-            continue
-        break
-    return payload
+from .helpers import (
+    extract_user_colors,
+    normalize_proxy_payload,
+    safe_upload_filename,
+    store_user_colors,
+)
 
 
 def _post_media_to_ultracard_sync(
@@ -351,46 +317,6 @@ FAVORITE_COLORS_STORAGE_KEY = "ultra_card_pro_cloud.favorite_colors"
 FAVORITE_COLORS_STORAGE_VERSION = 1
 
 
-def _extract_user_colors(data: dict | None, user_id: str | None) -> list[dict]:
-    """Return per-user colors with fallback to legacy global storage."""
-    if not isinstance(data, dict):
-        return []
-
-    if user_id:
-        users = data.get("users")
-        if isinstance(users, dict):
-            user_bucket = users.get(user_id)
-            if isinstance(user_bucket, dict):
-                colors = user_bucket.get("colors")
-                if isinstance(colors, list):
-                    return colors
-
-    colors = data.get("colors")
-    return colors if isinstance(colors, list) else []
-
-
-def _store_user_colors(data: dict | None, user_id: str | None, colors: list[dict]) -> dict:
-    """Persist per-user colors while preserving legacy/global keys."""
-    next_data = dict(data) if isinstance(data, dict) else {}
-
-    if not user_id:
-        next_data["colors"] = colors
-        return next_data
-
-    users = next_data.get("users")
-    if not isinstance(users, dict):
-        users = {}
-
-    user_bucket = users.get(user_id)
-    if not isinstance(user_bucket, dict):
-        user_bucket = {}
-
-    user_bucket["colors"] = colors
-    users[user_id] = user_bucket
-    next_data["users"] = users
-    return next_data
-
-
 class UltraCardFavoriteColorsView(HomeAssistantView):
     """GET/POST /api/ultra_card_pro_cloud/favorite_colors — load/save favorite colors in HA store."""
 
@@ -404,7 +330,7 @@ class UltraCardFavoriteColorsView(HomeAssistantView):
         user_id = _request_hass_user_id(request)
         store = Store(hass, FAVORITE_COLORS_STORAGE_VERSION, FAVORITE_COLORS_STORAGE_KEY)
         data = await store.async_load()
-        return self.json({"colors": _extract_user_colors(data, user_id)})
+        return self.json({"colors": extract_user_colors(data, user_id)})
 
     async def post(self, request: web.Request) -> web.Response:
         """Save favorite colors to HA store."""
@@ -432,7 +358,7 @@ class UltraCardFavoriteColorsView(HomeAssistantView):
             })
         store = Store(hass, FAVORITE_COLORS_STORAGE_VERSION, FAVORITE_COLORS_STORAGE_KEY)
         existing = await store.async_load()
-        await store.async_save(_store_user_colors(existing, user_id, validated))
+        await store.async_save(store_user_colors(existing, user_id, validated))
         return self.json({"success": True, "colors": validated})
 
 
@@ -449,6 +375,15 @@ class UltraCardProxyView(HomeAssistantView):
 
     async def post(self, request: web.Request) -> web.Response:
         hass: HomeAssistant = request.app["hass"]
+        if not _request_can_manage_shared_auth(request):
+            return self.json(
+                {
+                    "error": "Only Home Assistant admins can use the Ultra Card cloud proxy.",
+                    "_status": 403,
+                    "_body": None,
+                },
+                status_code=403,
+            )
         try:
             body = await request.json()
         except Exception:
@@ -456,9 +391,15 @@ class UltraCardProxyView(HomeAssistantView):
 
         method = (body.get("method") or "GET").upper()
         url = (body.get("url") or "").strip()
-        payload = _normalize_proxy_payload(body)
+        payload = normalize_proxy_payload(body)
 
-        if not url or not url.startswith(API_BASE_URL):
+        if method not in PROXY_ALLOWED_METHODS:
+            return self.json(
+                {"error": "Method not allowed", "_status": 405, "_body": None},
+                status_code=405,
+            )
+
+        if not is_proxy_url_allowed(url):
             return self.json({"error": "Invalid URL", "_status": 400, "_body": None}, status_code=400)
 
         entries = hass.config_entries.async_entries(DOMAIN)
@@ -499,7 +440,7 @@ class UltraCardProxyView(HomeAssistantView):
                         return self.json({"message": "Invalid base64", "_status": 400, "_body": None}, status_code=400)
                     if not raw_bytes:
                         return self.json({"message": "Empty file data", "_status": 400, "_body": None}, status_code=400)
-                    fname = _safe_upload_filename(str(spec.get("filename") or "upload.bin"))
+                    fname = safe_upload_filename(str(spec.get("filename") or "upload.bin"))
                     ctype = (
                         spec.get("content_type")
                         or spec.get("contentType")
@@ -539,6 +480,11 @@ class UltraCardMediaUploadView(HomeAssistantView):
 
     async def post(self, request: web.Request) -> web.Response:
         hass: HomeAssistant = request.app["hass"]
+        if not _request_can_manage_shared_auth(request):
+            return self.json(
+                {"message": "Only Home Assistant admins can upload media via Ultra Card Connect."},
+                status_code=403,
+            )
 
         entries = hass.config_entries.async_entries(DOMAIN)
         if not entries:
@@ -560,7 +506,7 @@ class UltraCardMediaUploadView(HomeAssistantView):
         async for part in reader:
             if part.name == "photo":
                 photo_bytes = await part.read(decode=False)
-                filename = _safe_upload_filename(part.filename or filename)
+                filename = safe_upload_filename(part.filename or filename)
                 content_type = part.headers.get("Content-Type", "application/octet-stream")
                 break
 
@@ -621,7 +567,6 @@ def aiohttp_timeout(seconds: int):
     return aiohttp.ClientTimeout(total=seconds)
 
 # Read version from root version.py file
-import os
 __version__ = "1.0.0"
 try:
     version_file = os.path.join(os.path.dirname(__file__), "..", "..", "version.py")

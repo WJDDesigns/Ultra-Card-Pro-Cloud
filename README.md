@@ -212,24 +212,7 @@ Ultra Card Connect currently uses one shared Home Assistant integration entry pe
 
 ## 👨‍💻 Development
 
-### Version Management
-
-This integration uses a single source of truth for version numbers.
-
-To change the version, edit `version.py` in the root folder:
-
-```python
-__version__ = "1.0.9"  # Change this
-```
-
-Then sync to manifest (required before deploying):
-
-```bash
-npm run version:update
-npm run deploy
-```
-
-See `VERSION_GUIDE.md` for detailed documentation.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for contributor setup, version management, panel bundling, local deploy, and release workflow.
 
 ---
 

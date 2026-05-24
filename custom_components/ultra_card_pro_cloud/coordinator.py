@@ -4,8 +4,6 @@ from __future__ import annotations
 import logging
 import asyncio
 import time
-import base64
-import json as json_module
 from datetime import timedelta
 from typing import Any
 
@@ -23,6 +21,7 @@ from .const import (
     CONF_PASSWORD,
     GRACE_PERIOD_HOURS,
 )
+from .jwt_utils import parse_jwt_expiry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,45 +38,6 @@ CONNECT_TIMEOUT = 10  # Connection establishment timeout
 
 # Grace period - calculated from hours constant
 GRACE_PERIOD_SECONDS = GRACE_PERIOD_HOURS * 3600
-
-
-def parse_jwt_expiry(token: str) -> int | None:
-    """Parse the expiry timestamp from a JWT token.
-    
-    JWT format: header.payload.signature
-    The payload contains the 'exp' claim with Unix timestamp.
-    """
-    try:
-        # Split the JWT into parts
-        parts = token.split('.')
-        if len(parts) != 3:
-            _LOGGER.debug("Invalid JWT format - expected 3 parts, got %d", len(parts))
-            return None
-        
-        # Decode the payload (second part)
-        # Add padding if needed (base64 requires padding to be multiple of 4)
-        payload_b64 = parts[1]
-        padding = 4 - len(payload_b64) % 4
-        if padding != 4:
-            payload_b64 += '=' * padding
-        
-        # Use URL-safe base64 decoding
-        payload_bytes = base64.urlsafe_b64decode(payload_b64)
-        payload = json_module.loads(payload_bytes.decode('utf-8'))
-        
-        # Extract the 'exp' claim (expiry timestamp)
-        exp = payload.get('exp')
-        if exp:
-            _LOGGER.debug("🔑 Parsed JWT expiry: %s (in %d seconds)", 
-                         exp, exp - int(time.time()))
-            return int(exp)
-        
-        _LOGGER.debug("No 'exp' claim found in JWT payload")
-        return None
-        
-    except Exception as e:
-        _LOGGER.debug("Failed to parse JWT expiry: %s", e)
-        return None
 
 
 def _get_timeout() -> aiohttp.ClientTimeout:
@@ -122,7 +82,8 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
         self._token_expires_at: int = 0
         self._last_auth_attempt: float = 0
         self._auth_failure_count: int = 0
-        
+        self._reauth_requested: bool = False
+
         # Grace period caching - maintains Pro access during server outages
         self._last_successful_data: dict[str, Any] | None = None
         self._last_successful_time: float = 0
@@ -157,6 +118,29 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             GRACE_PERIOD_HOURS
         )
         return None
+
+    async def _async_request_reauth(self, reason: str) -> None:
+        """Surface HA reauth UI when stored credentials or tokens are invalid."""
+        if self._reauth_requested:
+            return
+        if not self.entry.data or CONF_USERNAME not in self.entry.data:
+            return
+        self._reauth_requested = True
+        _LOGGER.warning("Requesting reauthentication for Ultra Card Connect: %s", reason)
+        try:
+            await self.hass.config_entries.async_start_reauth(self.entry)
+        except Exception as err:
+            _LOGGER.error("Failed to start reauthentication flow: %s", err)
+            self._reauth_requested = False
+
+    def _is_invalid_credentials_error(self, err: Exception) -> bool:
+        """Return True when the error indicates revoked or invalid credentials."""
+        message = str(err).lower()
+        return (
+            "invalid credentials" in message
+            or "token expired or revoked" in message
+            or "no jwt token available after authentication" in message
+        )
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from API."""
@@ -199,6 +183,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             subscription_data = await self._fetch_subscription()
             
             import datetime
+
             # Token is kept in coordinator only; frontend uses integration proxy for API calls
             result = {
                 "authenticated": True,
@@ -206,7 +191,12 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                 "username": user_data.get("user_nicename") or user_data.get("name"),
                 "email": user_data.get("user_email") or user_data.get("email"),
                 "display_name": user_data.get("display_name") or user_data.get("name"),
-                "connected_at": datetime.datetime.now().isoformat(),
+                "connected_at": datetime.datetime.now(
+                    datetime.timezone.utc
+                ).isoformat(),
+                "last_poll": datetime.datetime.now(
+                    datetime.timezone.utc
+                ).isoformat(),
                 "subscription": {
                     "tier": subscription_data.get("tier", "free"),
                     "status": subscription_data.get("status", "expired"),
@@ -217,7 +207,8 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             
             # Reset failure count on success
             self._auth_failure_count = 0
-            
+            self._reauth_requested = False
+
             # Cache successful auth for grace period during future outages
             self._last_successful_data = result.copy()
             self._last_successful_time = time.time()
@@ -237,11 +228,9 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             cached = self._get_cached_data_if_valid()
             if cached:
                 return cached
-            return {
-                "authenticated": False,
-                "error": f"Connection failed: Unable to reach ultracard.io - {err}",
-                "error_type": "connection",
-            }
+            raise UpdateFailed(
+                f"Connection failed: Unable to reach ultracard.io - {err}"
+            ) from err
         except aiohttp.ClientSSLError as err:
             # SSL/TLS certificate issues
             self._auth_failure_count += 1
@@ -254,11 +243,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             cached = self._get_cached_data_if_valid()
             if cached:
                 return cached
-            return {
-                "authenticated": False,
-                "error": f"SSL certificate error: {err}",
-                "error_type": "ssl",
-            }
+            raise UpdateFailed(f"SSL certificate error: {err}") from err
         except asyncio.TimeoutError:
             # Request timed out
             self._auth_failure_count += 1
@@ -271,11 +256,9 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             cached = self._get_cached_data_if_valid()
             if cached:
                 return cached
-            return {
-                "authenticated": False,
-                "error": f"Connection timed out after {REQUEST_TIMEOUT} seconds",
-                "error_type": "timeout",
-            }
+            raise UpdateFailed(
+                f"Connection timed out after {REQUEST_TIMEOUT} seconds"
+            )
         except aiohttp.ServerDisconnectedError as err:
             # Server closed connection unexpectedly
             self._auth_failure_count += 1
@@ -288,11 +271,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             cached = self._get_cached_data_if_valid()
             if cached:
                 return cached
-            return {
-                "authenticated": False,
-                "error": f"Server disconnected: {err}",
-                "error_type": "disconnected",
-            }
+            raise UpdateFailed(f"Server disconnected: {err}") from err
         except aiohttp.ClientResponseError as err:
             # HTTP error response
             self._auth_failure_count += 1
@@ -305,48 +284,42 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                 cached = self._get_cached_data_if_valid()
                 if cached:
                     return cached
-            return {
-                "authenticated": False,
-                "error": f"HTTP {err.status}: {err.message}",
-                "error_type": "http_error",
-            }
+            raise UpdateFailed(f"HTTP {err.status}: {err.message}") from err
         except UpdateFailed as err:
-            # Our own UpdateFailed exceptions
             self._auth_failure_count += 1
-            _LOGGER.error("❌ Update failed: %s", err)
-            
-            # If we've failed multiple times, clear tokens to force re-auth
+            _LOGGER.error("Update failed: %s", err)
+
             if self._auth_failure_count >= 3:
-                _LOGGER.warning("⚠️ Multiple auth failures (%d), clearing tokens for fresh start", self._auth_failure_count)
+                _LOGGER.warning(
+                    "Multiple auth failures (%d), clearing tokens for fresh start",
+                    self._auth_failure_count,
+                )
                 self._jwt_token = None
                 self._refresh_token = None
                 self._token_expires_at = 0
-            
-            return {
-                "authenticated": False,
-                "error": str(err),
-                "error_type": "update_failed",
-            }
+
+            if self._is_invalid_credentials_error(err):
+                await self._async_request_reauth(str(err))
+
+            raise
         except Exception as err:
-            # Catch-all for unexpected errors
             self._auth_failure_count += 1
             _LOGGER.error(
-                "❌ Unexpected error communicating with Ultra Card API: %s (%s)",
-                err, type(err).__name__
+                "Unexpected error communicating with Ultra Card API: %s (%s)",
+                err,
+                type(err).__name__,
             )
-            
-            # If we've failed multiple times, clear tokens to force re-auth
+
             if self._auth_failure_count >= 3:
-                _LOGGER.warning("⚠️ Multiple auth failures (%d), clearing tokens for fresh start", self._auth_failure_count)
+                _LOGGER.warning(
+                    "Multiple auth failures (%d), clearing tokens for fresh start",
+                    self._auth_failure_count,
+                )
                 self._jwt_token = None
                 self._refresh_token = None
                 self._token_expires_at = 0
-            
-            return {
-                "authenticated": False,
-                "error": f"{type(err).__name__}: {err}",
-                "error_type": "unknown",
-            }
+
+            raise UpdateFailed(f"{type(err).__name__}: {err}") from err
 
     async def _authenticate(self) -> None:
         """Authenticate with ultracard.io and get JWT token."""
@@ -379,7 +352,13 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     
                     # Handle various error statuses
                     if response.status == 401 or response.status == 403:
-                        _LOGGER.error("❌ Authentication failed: Invalid credentials (status %s)", response.status)
+                        _LOGGER.error(
+                            "Authentication failed: Invalid credentials (status %s)",
+                            response.status,
+                        )
+                        await self._async_request_reauth(
+                            f"Invalid credentials (HTTP {response.status})"
+                        )
                         raise UpdateFailed(f"Invalid credentials: {response.status}")
                     
                     # JWT Auth Pro may return 202 for async operations - handle it
@@ -595,9 +574,15 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     
                     # Handle token expiration/revocation (JWT Auth Pro auto-revoke feature)
                     if response.status == 401 or response.status == 403:
-                        _LOGGER.warning("⚠️ Token rejected (status %s), clearing and will re-auth", response.status)
+                        _LOGGER.warning(
+                            "Token rejected (status %s), clearing and will re-auth",
+                            response.status,
+                        )
                         self._jwt_token = None
                         self._refresh_token = None
+                        await self._async_request_reauth(
+                            f"Token expired or revoked (HTTP {response.status})"
+                        )
                         raise UpdateFailed(f"Token expired or revoked: {response.status}")
                     
                     if not (200 <= response.status < 300):
@@ -655,9 +640,12 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     
                     # Handle token expiration/revocation
                     if response.status == 401 or response.status == 403:
-                        _LOGGER.warning("⚠️ Token rejected during subscription fetch")
+                        _LOGGER.warning("Token rejected during subscription fetch")
                         self._jwt_token = None
                         self._refresh_token = None
+                        await self._async_request_reauth(
+                            f"Token expired or revoked (HTTP {response.status})"
+                        )
                         raise UpdateFailed(f"Token expired or revoked: {response.status}")
                     
                     if not (200 <= response.status < 300):

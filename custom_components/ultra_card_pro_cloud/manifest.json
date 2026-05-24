@@ -5,11 +5,16 @@
     "@WJDDesigns"
   ],
   "config_flow": true,
-  "dependencies": ["http"],
+  "dependencies": [
+    "frontend",
+    "http"
+  ],
   "documentation": "https://github.com/WJDDesigns/ultra-card-connect",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/WJDDesigns/ultra-card-connect/issues",
-  "requirements": [],
-  "version": "1.4.0"
+  "requirements": [
+    "requests>=2.31.0"
+  ],
+  "version": "1.5.0"
 }

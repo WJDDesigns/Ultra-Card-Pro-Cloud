@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check version alignment
+        run: npm run version:check
+
+      - name: Build and validate integration
+        run: node build.js
+
+      - name: Verify documentation bundle
+        run: npm run docs:check
+
+      - name: Verify panel bundle is present
+        run: |
+          test -f custom_components/ultra_card_pro_cloud/www/ultra-card-panel.js
+          chunk_count=$(find custom_components/ultra_card_pro_cloud/www -name 'uc-*.js' | wc -l | tr -d ' ')
+          echo "Found ${chunk_count} uc-*.js chunks"
+          if [ "${chunk_count}" -lt 1 ]; then
+            echo "Expected at least one uc-*.js chunk"
+            exit 1
+          fi
+
+      - name: Check for debug telemetry in shipped panel assets
+        run: |
+          if grep -rq '127\.0\.0\.1:7242' custom_components/ultra_card_pro_cloud/www; then
+            echo "::warning::Debug localhost telemetry found in www/ — rebuild the panel from Ultra Card without debug instrumentation"
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run unit tests
+        run: pytest tests/ -q
+
+      - name: Lint Python integration
+        run: pip install ruff && ruff check custom_components/ultra_card_pro_cloud/

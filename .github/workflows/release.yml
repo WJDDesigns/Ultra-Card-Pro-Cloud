@@ -26,35 +26,77 @@ jobs:
         with:
           path: "."
 
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check version alignment
+        run: npm run version:check
+
+      - name: Verify documentation bundle
+        run: npm run docs:check
+
+      - name: Verify tag matches manifest version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MANIFEST_VERSION=$(node -p "require('./custom_components/ultra_card_pro_cloud/manifest.json').version")
+          if [ "${TAG_VERSION}" != "${MANIFEST_VERSION}" ]; then
+            echo "Tag v${TAG_VERSION} does not match manifest.json ${MANIFEST_VERSION}"
+            exit 1
+          fi
+
+      - name: Build release package
+        run: node build.js --release
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ultra-card-connect-release
+          path: release/*.zip
+
   release:
-    needs: [hacs, hassfest]
+    needs: [hacs, hassfest, validate]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
+      - name: Download release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ultra-card-connect-release
+          path: release
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: false
+          files: release/*.zip
           body: |
             ## What's Changed in ${{ github.ref_name }}
-            
+
             See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
-            
+
             ### Installation
-            
+
             **Via HACS (Recommended):**
             1. Open HACS in Home Assistant
             2. Search for "Ultra Card Connect"
             3. Click Download
             4. Restart Home Assistant
-            
+
             **Manual Installation:**
-            1. Download the `custom_components/ultra_card_pro_cloud` folder
-            2. Copy to your Home Assistant `config/custom_components/` directory
+            1. Download the release zip attached to this release
+            2. Extract `ultra_card_pro_cloud` into your Home Assistant `config/custom_components/` directory
             3. Restart Home Assistant
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

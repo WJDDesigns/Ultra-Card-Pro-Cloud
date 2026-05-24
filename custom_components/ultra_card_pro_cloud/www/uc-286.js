@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkultra_card=self.webpackChunkultra_card||[]).push([[286],{9286(t,r,e){function c(t){try{return localStorage.getItem(t)}catch(t){return null}}function a(t,r){try{return localStorage.setItem(t,r),!0}catch(t){return!1}}function u(t){try{localStorage.removeItem(t)}catch(t){}}e.d(r,{FX:()=>a,Pw:()=>u,bi:()=>c})}}]);

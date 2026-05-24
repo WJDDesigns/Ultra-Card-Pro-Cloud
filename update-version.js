@@ -15,6 +15,7 @@ const MANIFEST_FILE = path.join(
   __dirname,
   "custom_components/ultra_card_pro_cloud/manifest.json"
 );
+const PACKAGE_FILE = path.join(__dirname, "package.json");
 
 console.log("🔄 Updating Ultra Card Pro Cloud version...\n");
 
@@ -51,6 +52,19 @@ try {
   process.exit(1);
 }
 
+// Update package.json
+try {
+  const packageJson = JSON.parse(fs.readFileSync(PACKAGE_FILE, "utf8"));
+  const oldPackageVersion = packageJson.version;
+  packageJson.version = version;
+  fs.writeFileSync(PACKAGE_FILE, JSON.stringify(packageJson, null, 2) + "\n");
+  console.log(`✅ Updated package.json: ${oldPackageVersion} → ${version}`);
+} catch (error) {
+  console.error(`❌ Error updating package.json: ${error.message}`);
+  process.exit(1);
+}
+
 console.log("\n🎉 Version update complete!\n");
 console.log("📝 Changed files:");
-console.log("   - custom_components/ultra_card_pro_cloud/manifest.json\n");
+console.log("   - custom_components/ultra_card_pro_cloud/manifest.json");
+console.log("   - package.json\n");

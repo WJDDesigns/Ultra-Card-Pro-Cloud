@@ -233,6 +233,9 @@ class UltraCardProCloudConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Show menu: Sign In or Set Up Without Account."""
+        if user_input is None and self.hass.config_entries.async_entries(DOMAIN):
+            return self.async_abort(reason="already_configured")
+
         if user_input is not None:
             if user_input["next_step"] == "setup_without_account":
                 # Create entry with no credentials; user signs in later via Account tab
@@ -300,6 +303,9 @@ class UltraCardProCloudConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """
         if user_input is None:
             return self.async_abort(reason="unknown")
+
+        if self.hass.config_entries.async_entries(DOMAIN):
+            return self.async_abort(reason="already_configured")
 
         username = user_input.get(CONF_USERNAME, "")
         password = user_input.get(CONF_PASSWORD, "")

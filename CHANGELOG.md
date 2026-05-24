@@ -2,6 +2,21 @@
 
 All notable changes to Ultra Card Connect will be documented in this file.
 
+## [1.5.0] - 2026-05-24
+
+### Added
+- **Shared helper utilities for auth and payload handling** — Added new helper modules for JWT/auth normalization and safer proxy/media request handling across the integration endpoints.
+- **Project quality tooling** — Added CI/test scaffolding and development baseline files to support validation and future regression coverage.
+
+### Changed
+- **Bundled Hub panel refreshed** — Updated bundled `ultra-card-panel.js` and chunk assets to include the latest Hub fixes and navigation updates from today.
+- **Release pipeline hardening** — Updated release workflow and build/deploy guidance to enforce version checks, docs bundle checks, and release artifact packaging consistency.
+- **Documentation cleanup** — Consolidated legacy deployment/setup notes into the current docs structure and removed outdated duplicate guides.
+
+### Fixed
+- **Coordinator/auth flow reliability** — Refined config/coordinator/sensor wiring and auth state propagation to reduce setup/auth edge-case failures.
+- **Proxy/media handling resilience** — Improved payload parsing and helper-driven request handling paths used by the integration API endpoints.
+
 ## [1.4.0] - 2026-04-02
 
 ### Added

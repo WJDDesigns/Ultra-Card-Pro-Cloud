@@ -23,7 +23,7 @@ const CONFIG = {
     path.resolve(__dirname, "../Ultra Card/dist/ultra-card-panel.js"),
 };
 
-console.log("🚀 Ultra Card Pro Cloud Integration Deployment\n");
+console.log("🚀 Ultra Card Connect Integration Deployment\n");
 
 // Bundle ultra-card-panel.js and all lazy-load chunks (uc-*.js) into the integration's
 // www/ folder so the sidebar panel works. The panel uses code-splitting; chunks must
@@ -180,6 +180,18 @@ function deployIntegration(targetPath) {
 
 // Main deployment process
 async function deploy() {
+  try {
+    console.log("📚 Syncing documentation from Ultra Card wiki…\n");
+    execSync("node scripts/sync-wiki-docs.js", { stdio: "inherit", cwd: __dirname });
+    console.log("");
+  } catch (error) {
+    console.warn(
+      "⚠️  Wiki docs sync failed (continuing deploy):",
+      error.message || error
+    );
+    console.warn("   Run npm run docs:sync manually if the Docs tab is empty.\n");
+  }
+
   // Bundle panel JS into integration www/ folder before deploying (exits if panel missing)
   bundlePanelJs();
 
@@ -226,7 +238,7 @@ async function deploy() {
     console.log("      → http://192.168.4.244:8123/config/server_control");
     console.log("   2. Go to Settings → Devices & Services");
     console.log("   3. Click '+ Add Integration'");
-    console.log("   4. Search for 'Ultra Card Pro Cloud'");
+    console.log("   4. Search for 'Ultra Card Connect'");
     console.log("   5. Enter your ultracard.io credentials");
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
   } else {
