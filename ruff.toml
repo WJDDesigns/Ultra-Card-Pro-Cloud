@@ -1,0 +1,6 @@
+# Pin the lint rule set so CI results don't change when a new ruff version
+# ships with different defaults. These match ruff's classic defaults
+# (pycodestyle errors + pyflakes), which this codebase is kept clean against.
+
+[lint]
+select = ["E4", "E7", "E9", "F"]
