@@ -279,6 +279,16 @@ async function build() {
   // Validate JSON files
   validateJSON();
 
+  // Fail early if Hub panel assets drifted from the last Ultra Card sync
+  try {
+    execSync("npm run panel:check", { stdio: "inherit", cwd: __dirname });
+  } catch {
+    console.error(
+      "❌ Panel bundle check failed. From the Ultra Card repo run: npm run build && npm run sync:panel"
+    );
+    process.exit(1);
+  }
+
   // Create distribution
   createDistribution();
 

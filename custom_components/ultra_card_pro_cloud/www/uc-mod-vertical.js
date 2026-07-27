@@ -1,0 +1,127 @@
+"use strict";(self.webpackChunkultra_card=self.webpackChunkultra_card||[]).push([[560],{4442(e,t,n){n.d(t,{UltraVerticalModule:()=>_});var i=n(5183),o=n(1043),a=n(3721),r=n(7907),l=n(8414),d=n(8938),s=n(5096),c=n(230),g=n(378),u=n(2034),p=n(361),m=n(6477),v=n(5064);const h=["button","input","select","textarea","a[href]","ha-switch","ha-slider","ha-control-slider","ha-control-select",'[role="button"]','[role="slider"]','[role="switch"]'];class _ extends a.m{constructor(){super(...arguments),this.metadata={type:"vertical",title:"Vertical Layout",description:"Arrange modules in columns with flexible alignment and spacing",author:"WJD Designs",version:"1.0.0",icon:"mdi:view-agenda",category:"layout",tags:["layout","vertical","alignment","container","flexbox"]},this.handlesOwnDesignStyles=!0}createDefault(e,t){return{id:e||this.generateId("vertical"),type:"vertical",alignment:"center",horizontal_alignment:"stretch",gap:8,gap_unit:"px",modules:[],tap_action:{action:"nothing"},hold_action:{action:"nothing"},double_tap_action:{action:"nothing"},display_mode:"always",display_conditions:[]}}renderGeneralTab(e,t,n,o){var a;const r=e,l=(null===(a=null==t?void 0:t.locale)||void 0===a?void 0:a.language)||"en";return i.qy`
+      ${this.injectUcFormStyles()}
+
+      <div class="module-general-settings">
+        <!-- Layout Configuration Section -->
+        ${this.renderSettingsSection((0,s.kg)("editor.vertical.layout.title",l,"Layout Configuration"),(0,s.kg)("editor.vertical.layout.desc",l,"Configure alignment and spacing for items in a single column."),[{title:(0,s.kg)("editor.vertical.alignment.horizontal",l,"Horizontal Alignment"),description:(0,s.kg)("editor.vertical.alignment.horizontal_desc",l,"Choose how items are aligned horizontally within the column."),hass:t,data:{horizontal_alignment:r.horizontal_alignment||"stretch"},schema:[this.selectField("horizontal_alignment",[{value:"left",label:(0,s.kg)("editor.common.left",l,"Left")},{value:"center",label:(0,s.kg)("editor.common.center",l,"Center")},{value:"right",label:(0,s.kg)("editor.common.right",l,"Right")},{value:"stretch",label:(0,s.kg)("editor.common.stretch",l,"Stretch")}])],onChange:e=>{e.detail.value.horizontal_alignment!==(r.horizontal_alignment||"stretch")&&(o(e.detail.value),setTimeout(()=>{this.triggerPreviewUpdate()},50))}},{title:(0,s.kg)("editor.vertical.alignment.vertical",l,"Vertical Distribution"),description:(0,s.kg)("editor.vertical.alignment.vertical_desc",l,"How items are distributed along the vertical axis."),hass:t,data:{alignment:r.alignment||"center"},schema:[this.selectField("alignment",[{value:"top",label:(0,s.kg)("editor.common.top",l,"Top")},{value:"center",label:(0,s.kg)("editor.common.center",l,"Center")},{value:"bottom",label:(0,s.kg)("editor.common.bottom",l,"Bottom")},{value:"space-between",label:(0,s.kg)("editor.common.space_between",l,"Space Between")},{value:"space-around",label:(0,s.kg)("editor.common.space_around",l,"Space Around")}])],onChange:e=>{e.detail.value.alignment!==(r.alignment||"center")&&(o(e.detail.value),setTimeout(()=>{this.triggerPreviewUpdate()},50))}}])}
+
+        <!-- Gap Between Items Field with Custom Slider -->
+        <div
+          class="settings-section"
+          style="background: var(--secondary-background-color); border-radius: 8px; padding: 16px; margin-bottom: 32px;"
+        >
+          <div
+            class="section-title"
+            style="font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--primary-color); margin-bottom: 16px; letter-spacing: 0.5px;"
+          >
+            ${(0,s.kg)("editor.vertical.gap.title",l,"Gap Configuration")}
+          </div>
+
+          ${(()=>{const e=r.gap_unit||"rem",n="px"===e,a=n?8:1.2,d=void 0!==r.gap&&null!==r.gap?Number(r.gap):a,c=n?-100:-10,g=n?100:10,u=n?1:.1,p="space-between"===r.alignment||"space-around"===r.alignment;return i.qy`
+              <div style="margin-bottom: 8px; ${p?"opacity: 0.5; pointer-events: none;":""}">
+                ${this.renderGapWithUnitField((0,s.kg)("editor.vertical.gap.between_items",l,"Gap Between Items"),(0,s.kg)("editor.vertical.gap.desc",l,"Set the spacing between vertical items. Use negative values to overlap items. Note: Gap is disabled when using Space Between or Space Around distribution."),t,d,a,c,g,u,e,[{value:"px",label:"px"},{value:"rem",label:"rem"},{value:"em",label:"em"},{value:"%",label:"%"},{value:"vw",label:"vw"},{value:"vh",label:"vh"}],e=>o({gap:e}),(t,n)=>{const i=(l=n,(a=e)===(r=t)?l:((e,t)=>"px"===t||"%"===t||"vw"===t||"vh"===t?e:Math.round(e/16*10)/10)((d=l,"px"===(s=a)||"%"===s||"vw"===s||"vh"===s?d:16*d),r));var a,r,l,d,s;o({gap:i,gap_unit:t})})}
+              </div>
+            `})()}
+        </div>
+      </div>
+    `}renderPreview(e,t,n,a){var r,l,d,g,u,v,_;const b=e;this._currentConfig=n,this._currentPreviewContext=a;const y=(null===(r=null==t?void 0:t.locale)||void 0===r?void 0:r.language)||"en",x=b,w=Object.assign(Object.assign({},x),x.design||{}),f=b.modules&&b.modules.length>0;c.S.setHass(t);const k=f?b.modules.filter(e=>{var t,n,i,o;const a=e,r=c.S.evaluateModuleVisibility(a),l=c.S.evaluateLogicProperties({logic_entity:null===(t=null==a?void 0:a.design)||void 0===t?void 0:t.logic_entity,logic_attribute:null===(n=null==a?void 0:a.design)||void 0===n?void 0:n.logic_attribute,logic_operator:null===(i=null==a?void 0:a.design)||void 0===i?void 0:i.logic_operator,logic_value:null===(o=null==a?void 0:a.design)||void 0===o?void 0:o.logic_value});return r&&l}):[],S=f&&0===k.length,$="live"===a||"ha-preview"===a,C=b.gap_unit||"rem",z="px"===C,P=void 0!==b.gap&&null!==b.gap?Number(b.gap):z?8:1.2,U=w.background_filter&&"none"!==w.background_filter,L=U?{styles:{}}:(0,m.U9)({color:w.background_color,fallback:"transparent",image:this.getBackgroundImageCSS(w,t),imageSize:w.background_size||"cover",imagePosition:w.background_position||"center",imageRepeat:w.background_repeat||"no-repeat"}),j=w.border_radius||x.border_radius||(void 0!==(null===(l=w.border)||void 0===l?void 0:l.radius)?w.border.radius:void 0)||(void 0!==(null===(d=x.border)||void 0===d?void 0:d.radius)?x.border.radius:void 0),I=Object.assign(Object.assign(Object.assign(Object.assign({padding:this.getPaddingCSS(w),margin:this.getMarginCSS(w)},L.styles),{border:w.border_width||(null===(g=w.border)||void 0===g?void 0:g.width)||w.border_color||(null===(u=w.border)||void 0===u?void 0:u.color)||w.border_style&&"none"!==w.border_style||(null===(v=w.border)||void 0===v?void 0:v.style)&&"none"!==w.border.style?this.getBorderCSS(w):"none",borderRadius:this.addPixelUnit(j)||"0",position:w.position||(w.z_index?"relative":"static"),zIndex:w.z_index||"auto"}),U?{isolation:"isolate"}:{}),{width:w.width||void 0,height:w.height||void 0,maxWidth:w.max_width||void 0,minWidth:w.min_width||void 0,maxHeight:w.max_height||void 0,boxShadow:w.box_shadow||void 0,backdropFilter:w.backdrop_filter||void 0,clipPath:w.clip_path||void 0,display:"flex",flexDirection:"column",justifyContent:this.getJustifyContent(b.alignment||"center"),gap:P>=0&&"space-between"!==b.alignment&&"space-around"!==b.alignment?`${P}${C}`:"0",alignItems:this.getAlignItems(b.horizontal_alignment||"stretch"),minHeight:w.min_height||"auto",overflow:(()=>{const e=w.overflow;return e&&"visible"!==e?e:j&&"0"!==String(j)&&"0px"!==String(j)?"hidden":e||"visible"})(),boxSizing:"border-box"}),B=this.createGestureHandlers(b.id,{tap_action:b.tap_action,hold_action:b.hold_action,double_tap_action:b.double_tap_action,entity:b.entity,module:b},t,n,h),O=null===(_=b.design)||void 0===_?void 0:_.css_variable_prefix;if(O){const e=(0,p.E)(O,b.design);Object.assign(I,e)}if(U){const e=this.getBackgroundImageCSS(w,t);e&&"none"!==e&&(I["--bg-image"]=e),w.background_color&&(I["--bg-color"]=w.background_color),I["--bg-size"]=w.background_size||"cover",I["--bg-position"]=w.background_position||"center",I["--bg-repeat"]=w.background_repeat||"no-repeat",I["--bg-filter"]=w.background_filter,I.position&&"static"!==I.position||(I.position="relative")}const T=b.tap_action&&"nothing"!==b.tap_action.action||b.hold_action&&"nothing"!==b.hold_action.action||b.double_tap_action&&"nothing"!==b.double_tap_action.action,A=this.getHoverEffectClass(e),M=this.buildDesignStyles(e,t),q=new Set(["border","borderRadius","padding","paddingTop","paddingBottom","paddingLeft","paddingRight","background","backgroundColor","backgroundImage","backgroundSize","backgroundPosition","backgroundRepeat","boxShadow","backdropFilter","webkitBackdropFilter","clipPath","overflow","isolation","filter","margin","marginTop","marginBottom","marginLeft","marginRight"]),D=Object.fromEntries(Object.entries(M).filter(([e])=>!q.has(e))),R=this.buildStyleString(D);return M.boxShadow&&(I.boxShadow=M.boxShadow),S&&!$?i.qy``:this.wrapWithAnimation(i.qy`
+      <div class="vertical-module-preview ${A}" style="${R}">
+        <div
+          class="vertical-preview-content"
+          style="${this.styleObjectToCss(I)}; cursor: ${T?"pointer":"default"}; ${T?"pointer-events: auto;":""}"
+          @pointerdown=${T?B.onPointerDown:null}
+          @pointermove=${T?B.onPointerMove:null}
+          @pointerup=${T?B.onPointerUp:null}
+          @pointercancel=${T?B.onPointerCancel:null}
+          @pointerleave=${T?B.onPointerLeave:null}
+        >
+          ${k.length>0?(()=>(0,o.u)(k,e=>e.id||e.type,(e,n)=>{const o=P<0&&n>0&&"space-between"!==b.alignment&&"space-around"!==b.alignment,a=o?`${P}${C} 0 0 0`:"0",r=o;return i.qy`
+                      <div
+                        class="child-module-preview ${r?"negative-gap":""}"
+                        style="max-width: 100%; box-sizing: border-box; margin: ${a}; ${r?"padding: 0; border: none; background: transparent;":""}"
+                      >
+                        ${this._renderChildModulePreview(e,t,x,this._currentConfig,this._currentPreviewContext)}
+                      </div>
+                    `}))():i.qy`
+                <div class="empty-layout-message">
+                  ${S?i.qy`
+                        <span
+                          >${(0,s.kg)("editor.vertical.empty.all_hidden",y,"All modules hidden by logic")}</span
+                        >
+                        <small
+                          >${(0,s.kg)("editor.vertical.empty.all_hidden_desc",y,"Every module in this layout is hidden by its display conditions")}</small
+                        >
+                      `:i.qy`
+                        <span
+                          >${(0,s.kg)("editor.vertical.empty.no_modules",y,"No modules added yet")}</span
+                        >
+                        <small
+                          >${(0,s.kg)("editor.vertical.empty.add_modules",y,"Add modules in the layout builder to see them here")}</small
+                        >
+                      `}
+                </div>
+              `}
+        </div>
+      </div>
+    `,e,t)}_renderChildModulePreview(e,t,n,o,a){var r,d,s,p,m,h,_,b,y,x,w,f,k,S,$,C,z,P,U,L;let j=e;n&&(j=this.applyLayoutDesignToChild(e,n)),c.S.setHass(t);const I=j,B=c.S.evaluateModuleVisibility(I),O=c.S.evaluateLogicProperties({logic_entity:null===(r=null==I?void 0:I.design)||void 0===r?void 0:r.logic_entity,logic_attribute:null===(d=null==I?void 0:I.design)||void 0===d?void 0:d.logic_attribute,logic_operator:null===(s=null==I?void 0:I.design)||void 0===s?void 0:s.logic_operator,logic_value:null===(p=null==I?void 0:I.design)||void 0===p?void 0:p.logic_value});if(!B||!O)return i.qy``;const T=(0,l.oD)().getModule(j.type);if(!T)return u.E.renderModuleLoadingState(j);const A=(null===(h=null===(m=T.metadata)||void 0===m?void 0:m.tags)||void 0===h?void 0:h.includes("pro"))||(null===(b=null===(_=T.metadata)||void 0===_?void 0:_.tags)||void 0===b?void 0:b.includes("premium"))||!1;let M=!1;const q=g.x.checkIntegrationAuth(t);if("pro"===(null===(y=null==q?void 0:q.subscription)||void 0===y?void 0:y.tier)&&"active"===(null===(x=null==q?void 0:q.subscription)||void 0===x?void 0:x.status))M=!0;else if(g.x.isAuthenticated()){const e=g.x.getCurrentUser();"pro"===(null===(w=null==e?void 0:e.subscription)||void 0===w?void 0:w.tier)&&"active"===(null===(f=null==e?void 0:e.subscription)||void 0===f?void 0:f.status)&&(M=!0)}const D=A&&!M;if(T){const e=(0,v.l8)(j),n=T.renderPreview(e,t,o,a);if(D)return i.qy`
+          <div class="pro-module-locked" style="position: relative;">
+            ${n}
+            <div
+              class="pro-module-overlay"
+              style="
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(0, 0, 0, 0.8);
+              backdrop-filter: blur(8px);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 12px;
+              z-index: 10;
+            "
+            >
+              <div
+                class="pro-module-message"
+                style="
+                text-align: center;
+                color: white;
+                padding: 6px;
+                max-width: 95%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+              "
+              >
+                <ha-icon icon="mdi:lock" style="font-size: 20px; flex-shrink: 0;"></ha-icon>
+                <div
+                  style="font-size: 11px; font-weight: 600; line-height: 1.2; white-space: nowrap;"
+                >
+                  Pro Module
+                </div>
+                <div style="font-size: 9px; opacity: 0.8; line-height: 1.2; display: none;">
+                  Login to view
+                </div>
+              </div>
+            </div>
+          </div>
+        `;const r=j,l=r.animation_type||(null===(k=r.design)||void 0===k?void 0:k.animation_type);if(l&&"none"!==l){const e=r.animation_duration||(null===(S=r.design)||void 0===S?void 0:S.animation_duration)||"2s",o=r.animation_delay||(null===($=r.design)||void 0===$?void 0:$.animation_delay)||"0s",a=r.animation_timing||(null===(C=r.design)||void 0===C?void 0:C.animation_timing)||"ease",d=r.animation_entity||(null===(z=r.design)||void 0===z?void 0:z.animation_entity),s=r.animation_trigger_type||(null===(P=r.design)||void 0===P?void 0:P.animation_trigger_type)||"state",c=r.animation_attribute||(null===(U=r.design)||void 0===U?void 0:U.animation_attribute),g=r.animation_state||(null===(L=r.design)||void 0===L?void 0:L.animation_state);let u=!1;if(d){if(g&&t&&t.states[d]){const e=t.states[d];u="attribute"===s&&c?String(e.attributes[c])===g:e.state===g}}else u=!0;if(u)return i.qy`
+            <div
+              class="module-animation-wrapper animation-${l}"
+              style="
+                --animation-duration: ${e};
+                --animation-delay: ${o};
+                --animation-timing: ${a};
+              "
+            >
+              ${n}
+            </div>
+          `}return n}return i.qy`
+      <div class="unknown-child-module">
+        <ha-icon icon="mdi:help-circle"></ha-icon>
+        <span>Unknown Module: ${j.type}</span>
+      </div>
+    `}applyLayoutDesignToChild(e,t){const n=Object.assign({},e),i=e.design||{};return void 0!==i.margin_top||void 0!==i.margin_bottom||void 0!==i.margin_left||void 0!==i.margin_right||void 0!==e.margin_top||void 0!==e.margin_bottom||void 0!==e.margin_left||void 0!==e.margin_right||(n.margin_top="0",n.margin_bottom="0",n.margin_left="0",n.margin_right="0"),t.color&&(n.color=t.color),t.font_size&&(n.font_size=t.font_size),t.font_family&&(n.font_family=t.font_family),t.font_weight&&(n.font_weight=t.font_weight),t.text_align&&(n.text_align=t.text_align),t.line_height&&(n.line_height=t.line_height),t.letter_spacing&&(n.letter_spacing=t.letter_spacing),t.text_transform&&(n.text_transform=t.text_transform),t.font_style&&(n.font_style=t.font_style),t.white_space&&(n.white_space=t.white_space),t.text_shadow_h&&(n.text_shadow_h=t.text_shadow_h),t.text_shadow_v&&(n.text_shadow_v=t.text_shadow_v),t.text_shadow_blur&&(n.text_shadow_blur=t.text_shadow_blur),t.text_shadow_color&&(n.text_shadow_color=t.text_shadow_color),t.box_shadow_h&&(n.box_shadow_h=t.box_shadow_h),t.box_shadow_v&&(n.box_shadow_v=t.box_shadow_v),t.box_shadow_blur&&(n.box_shadow_blur=t.box_shadow_blur),t.box_shadow_spread&&(n.box_shadow_spread=t.box_shadow_spread),t.box_shadow_color&&(n.box_shadow_color=t.box_shadow_color),t.animation_type&&(n.animation_type=t.animation_type),t.animation_entity&&(n.animation_entity=t.animation_entity),t.animation_trigger_type&&(n.animation_trigger_type=t.animation_trigger_type),t.animation_attribute&&(n.animation_attribute=t.animation_attribute),t.animation_state&&(n.animation_state=t.animation_state),t.intro_animation&&(n.intro_animation=t.intro_animation),t.outro_animation&&(n.outro_animation=t.outro_animation),t.animation_duration&&(n.animation_duration=t.animation_duration),t.animation_delay&&(n.animation_delay=t.animation_delay),t.animation_timing&&(n.animation_timing=t.animation_timing),n}renderLogicTab(e,t,n,i){return d.X.render(e,t,e=>i(e))}validate(e){const t=[...super.validate(e).errors];return{valid:0===t.length,errors:t}}styleObjectToCss(e){return Object.entries(e).filter(([,e])=>null!=e&&""!==e).map(([e,t])=>`${this.camelToKebab(e)}: ${t}`).join("; ")}camelToKebab(e){return e.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g,"$1-$2").toLowerCase()}addPixelUnit(e){return e?/^\d+$/.test(e)?`${e}px`:/^[\d\s]+$/.test(e)?e.split(" ").map(e=>e.trim()?`${e}px`:e).join(" "):e:e}getPaddingCSS(e){return e.padding_top||e.padding_bottom||e.padding_left||e.padding_right?`${this.addPixelUnit(e.padding_top)||"0px"} ${this.addPixelUnit(e.padding_right)||"0px"} ${this.addPixelUnit(e.padding_bottom)||"0px"} ${this.addPixelUnit(e.padding_left)||"0px"}`:"0px"}getMarginCSS(e){return e.margin_top||e.margin_bottom||e.margin_left||e.margin_right?`${this.addPixelUnit(e.margin_top)||"0"} ${this.addPixelUnit(e.margin_right)||"0"} ${this.addPixelUnit(e.margin_bottom)||"0"} ${this.addPixelUnit(e.margin_left)||"0"}`:"0"}getBackgroundCSS(e){const t=e.background_color||"";return t&&(t.includes("gradient")||t.includes("linear-")||t.includes("radial-"))?"transparent":t||"transparent"}getBackgroundImageOrGradient(e,t){const n=e.background_color||"";return n&&(n.includes("gradient")||n.includes("linear-")||n.includes("radial-"))?n:this.getBackgroundImageCSS(e,t)}getBackgroundImageCSS(e,t){var n,i;if(!e.background_image_type||"none"===e.background_image_type)return e.background_image?`url("${e.background_image}")`:"none";switch(e.background_image_type){case"upload":if(e.background_image)return`url("${(0,r.VG)(t,e.background_image)}")`;break;case"url":if(e.background_image)return`url("${e.background_image}")`;break;case"entity":if(e.background_image_entity&&(null==t?void 0:t.states[e.background_image_entity])){const o=t.states[e.background_image_entity];let a="";if((null===(n=o.attributes)||void 0===n?void 0:n.entity_picture)?a=o.attributes.entity_picture:(null===(i=o.attributes)||void 0===i?void 0:i.image)?a=o.attributes.image:o.state&&"string"==typeof o.state&&(o.state.startsWith("/")||o.state.startsWith("http"))&&(a=o.state),a)return`url("${(0,r.VG)(t,a)}")`}}return"none"}getBorderCSS(e){var t,n,i,o,a,r,l,d;const s=null!==(t=e.border_width)&&void 0!==t?t:null===(n=e.border)||void 0===n?void 0:n.width,c=null!==(a=null!==(i=e.border_style)&&void 0!==i?i:null===(o=e.border)||void 0===o?void 0:o.style)&&void 0!==a?a:"solid",g=null!==(d=null!==(r=e.border_color)&&void 0!==r?r:null===(l=e.border)||void 0===l?void 0:l.color)&&void 0!==d?d:"var(--divider-color)",u=c&&"none"!==c;return`${this.addPixelUnit(String(null!=s?s:""))||(u?"1px":"0")} ${c} ${g}`}getJustifyContent(e){switch(e){case"top":default:return"flex-start";case"center":return"center";case"bottom":return"flex-end";case"space-between":return"space-between";case"space-around":return"space-around"}}getAlignItems(e){switch(e){case"left":default:return"flex-start";case"center":return"center";case"right":return"flex-end";case"stretch":return"stretch"}}getStyles(){return`\n      /* Vertical Module Styles */\n      .vertical-module-preview {\n        /* Let flexbox handle width naturally - no forced width */\n        /* Removed min-height: 60px to prevent background color showing in empty space */\n      }\n\n      .vertical-preview-content {\n        background: transparent;\n        border-radius: 6px;\n        border: none;\n        transition: all 0.2s ease;\n        position: relative;\n      }\n\n      /* Background-filter pseudo-element — filters only the background, not the content */\n      .vertical-preview-content[style*="--bg-filter"]::before {\n        content: '';\n        position: absolute;\n        inset: 0;\n        background-color: var(--bg-color, transparent);\n        background-image: var(--bg-image, none);\n        background-size: var(--bg-size, cover);\n        background-position: var(--bg-position, center);\n        background-repeat: var(--bg-repeat, no-repeat);\n        filter: var(--bg-filter);\n        border-radius: inherit;\n        z-index: -1;\n        pointer-events: none;\n      }\n\n      /* Child modules keep their pointer events even when the container has actions.\n         Interactive child elements are excluded from the container gesture handlers\n         (see INTERACTIVE_CHILD_SELECTORS) so both parent actions and nested\n         buttons/sliders remain usable. */\n      .child-module-preview {\n        pointer-events: auto;\n        background: transparent;\n        border: none;\n        border-radius: 4px;\n        padding: 0;\n        transition: all 0.2s ease;\n        /* Let flexbox handle width naturally - only constrain to prevent overflow */\n        max-width: 100%;\n        box-sizing: border-box;\n      }\n\n      .child-module-preview.negative-gap {\n        background: transparent !important;\n        border: none !important;\n        border-radius: 0 !important;\n        padding: 0 !important;\n      }\n\n      /* Legacy hover effects removed - now handled by new hover effects system */\n\n      .empty-layout-message {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        gap: 4px;\n        color: var(--secondary-text-color);\n        font-style: italic;\n        text-align: center;\n        width: 100%;\n        padding: 20px;\n      }\n\n      .empty-layout-message span {\n        font-size: 14px;\n        font-weight: 500;\n      }\n\n      .empty-layout-message small {\n        font-size: 12px;\n        opacity: 0.8;\n      }\n\n      .unknown-child-module {\n        display: flex;\n        align-items: center;\n        gap: 8px;\n        padding: 8px;\n        color: var(--secondary-text-color);\n        font-style: italic;\n      }\n\n      /* Scoped list-style reset to avoid stray bullet markers in preview */\n      .vertical-module-preview ul,\n      .vertical-module-preview ol {\n        list-style: none;\n        margin: 0;\n        padding: 0;\n      }\n      .vertical-module-preview li::marker {\n        content: '';\n      }\n\n      /* Standard field styling */\n      .field-title {\n        font-size: 16px !important;\n        font-weight: 600 !important;\n      \n        margin-bottom: 4px !important;\n      }\n\n      .field-description {\n        font-size: 13px !important;\n        color: var(--secondary-text-color) !important;\n        margin-bottom: 12px !important;\n        opacity: 0.8 !important;\n        line-height: 1.4 !important;\n      }\n\n      .section-title {\n        font-size: 18px !important;\n        font-weight: 700 !important;\n        color: var(--primary-color) !important;\n        text-transform: uppercase !important;\n        letter-spacing: 0.5px !important;\n      }\n\n      /* Custom Range Slider Styling */\n      input[type="range"] {\n        -webkit-appearance: none;\n        appearance: none;\n        height: 6px;\n        border-radius: 3px;\n        background: var(--disabled-color);\n        outline: none;\n        opacity: 0.7;\n        transition: opacity 0.2s;\n      }\n\n      input[type="range"]:hover {\n        opacity: 1;\n      }\n\n      input[type="range"]::-webkit-slider-thumb {\n        -webkit-appearance: none;\n        appearance: none;\n        width: 20px;\n        height: 20px;\n        border-radius: 50%;\n        background: var(--primary-color);\n        cursor: pointer;\n        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n        transition: all 0.2s ease;\n      }\n\n      input[type="range"]::-webkit-slider-thumb:hover {\n        transform: scale(1.1);\n        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);\n      }\n\n      input[type="range"]::-moz-range-thumb {\n        width: 20px;\n        height: 20px;\n        border-radius: 50%;\n        background: var(--primary-color);\n        cursor: pointer;\n        border: none;\n        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n        transition: all 0.2s ease;\n      }\n\n      input[type="range"]::-moz-range-thumb:hover {\n        transform: scale(1.1);\n        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);\n      }\n\n      input[type="range"]::-moz-range-track {\n        height: 6px;\n        border-radius: 3px;\n        background: var(--disabled-color);\n        border: none;\n      }\n\n      ${a.m.getSliderStyles()}\n    `}}}}]);

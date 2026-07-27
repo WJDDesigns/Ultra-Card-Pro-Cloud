@@ -54,14 +54,14 @@ Pro requires two pieces, both available in HACS:
 1. Visit **[UltraCard.io](https://ultracard.io)** and create an account.
 2. Subscribe (or use the free trial — varies by promo).
 
-### 2. Ultra Card Pro Cloud integration
+### 2. Ultra Card Connect integration
 
 The **integration** is a separate custom HA component that brokers communication between your HA instance and the cloud:
 
 1. **HACS → Integrations → Add custom repository** → `WJDDesigns/Ultra-Card-Pro-Cloud`, category **Integration**.
-2. Install **Ultra Card Pro Cloud**.
+2. Install **Ultra Card Connect**.
 3. **Restart Home Assistant**.
-4. **Settings → Devices & services → Add integration → Ultra Card Pro Cloud**.
+4. **Settings → Devices & services → Add integration → Ultra Card Connect**.
 5. Sign in with your UltraCard.io credentials.
 
 After sign-in:
@@ -114,6 +114,6 @@ If you cancel Pro, your existing data on ultracard.io stays for 30 days then is 
 | Pro modules show "Sign in to use" | Integration not installed or signed-out. Re-add the integration. |
 | Sidebar Hub missing | Update the **integration** (HACS), not just the card. The Hub ships from the integration. |
 | Sync paused | Click the cloud icon in the editor — it shows the last sync error. Re-auth if needed. |
-| Backups not running | Check **Settings → Devices & services → Ultra Card Pro Cloud → Configure → Snapshot schedule**. |
+| Backups not running | Check **Settings → Devices & services → Ultra Card Connect → Configure → Snapshot schedule**. |
 
 For other issues: [FAQ and Troubleshooting](#uc-doc-faq-and-troubleshooting) or hit Discord (priority support for Pro members).

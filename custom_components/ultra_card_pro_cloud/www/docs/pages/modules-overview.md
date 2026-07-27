@@ -2,7 +2,7 @@
 
 Ultra Card ships **74 modules** organized into seven categories. Every module has the same 4-tab editor (General / Actions / Logic / Design), so once you've learned one you've learned them all.
 
-> **Pro modules** are marked with **(Pro)**. They require an UltraCard.io account + the *Ultra Card Pro Cloud* integration. See [Pro and Cloud](#uc-doc-pro-and-cloud).
+> **Pro modules** are marked with **(Pro)**. They require an UltraCard.io account + the *Ultra Card Connect* integration. See [Pro and Cloud](#uc-doc-pro-and-cloud).
 
 ---
 

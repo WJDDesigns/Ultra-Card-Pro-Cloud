@@ -2,6 +2,22 @@
 
 All notable changes to Ultra Card Connect will be documented in this file.
 
+## [1.6.0] - 2026-07-27
+
+### Added
+- **Version and capability handshake** - The authentication sensor now reports the integration version and a list of supported features (proxy, media upload, Smart Cards, favorite colors, diagnostics). Ultra Card reads this to warn you in Card Health when Connect needs updating, and to show clear "update Connect" messages instead of failing silently.
+- **Diagnostics support** - New `/api/ultra_card_pro_cloud/diagnostics` endpoint plus native Home Assistant diagnostics (Settings > Integrations > Ultra Card Connect > Download diagnostics). Reports include auth state, connectivity checks, and panel bundle info, with passwords and tokens always redacted. This powers the new Diagnostics view in the Hub Account tab.
+- **Panel bundle verification** - The bundled Hub panel now ships with a `panel-assets.json` manifest containing SHA-256 hashes of every file. A new `panel:check` step in the build, CI, and release workflows fails fast if the bundled panel ever drifts from a real Ultra Card build.
+
+### Changed
+- **Bundled Hub panel updated to Ultra Card 3.6.0** - Includes the redesigned single-row Hub navigation, the reorganized Account tab (Overview, Pro Tools, Diagnostics), in-panel billing management, and all fixes from the 3.6.0 betas.
+- **Faster, safer deploys** - The build and deploy scripts now use incremental rsync-based syncing, prune stale chunk files automatically, and validate the panel bundle before packaging a release.
+- **Naming cleanup** - Docs, README, and bundled wiki pages now consistently say "Ultra Card Connect" instead of the old "Ultra Card Pro Cloud" name.
+
+### Notes
+- After updating, **restart Home Assistant** and hard refresh your browser (Ctrl+Shift+R / Cmd+Shift+R) so the new panel and API endpoints load.
+- Ultra Card 3.6.0 or newer is recommended alongside this release so the version handshake and diagnostics work end to end.
+
 ## [1.5.0] - 2026-05-24
 
 ### Added

@@ -26,9 +26,24 @@ const CONFIG = {
 console.log("🚀 Ultra Card Connect Integration Deployment\n");
 
 // Bundle ultra-card-panel.js and all lazy-load chunks (uc-*.js) into the integration's
-// www/ folder so the sidebar panel works. The panel uses code-splitting; chunks must
-// be deployed or the panel will 404 when loading Dashboard, Favorites, Account, Pro, etc.
+// www/ folder so the sidebar panel works. Prefers Ultra Card's sync:panel (prune + hashes).
 function bundlePanelJs() {
+  const ultraCardRoot = path.resolve(__dirname, "../Ultra Card");
+  const syncScript = path.join(ultraCardRoot, "scripts", "sync-panel-to-integration.js");
+  if (fs.existsSync(syncScript)) {
+    console.log("📦 Syncing panel from Ultra Card (prune + panel-assets.json)…");
+    execSync(`node "${syncScript}"`, {
+      stdio: "inherit",
+      cwd: ultraCardRoot,
+      env: {
+        ...process.env,
+        INTEGRATION_WWW_PATH: path.resolve(__dirname, CONFIG.sourceDir, "www"),
+      },
+    });
+    console.log("");
+    return true;
+  }
+
   const wwwDir = path.resolve(__dirname, CONFIG.sourceDir, "www");
   const destFile = path.join(wwwDir, "ultra-card-panel.js");
 
@@ -50,27 +65,29 @@ function bundlePanelJs() {
   const sizeKb = Math.round(fs.statSync(destFile).size / 1024);
   console.log(`📦 Bundled ultra-card-panel.js → ${CONFIG.sourceDir}/www/ (${sizeKb} KB)`);
 
-  // Copy all panel lazy-load chunks (uc-*.js) from the same dist so dynamic imports resolve.
-  // Without these, the panel will 404 when opening Dashboard, Favorites, Account, Pro tabs.
   const distDir = path.dirname(CONFIG.panelJsSrc);
   let chunkCount = 0;
+  const wanted = new Set(["ultra-card-panel.js"]);
   if (fs.existsSync(distDir)) {
-    const files = fs.readdirSync(distDir);
-    for (const name of files) {
-      // Match uc-<id>.js (e.g. uc-980.js) but not ultra-card-panel.js
-      if (name.startsWith("uc-") && name.endsWith(".js") && name !== "ultra-card-panel.js") {
-        const src = path.join(distDir, name);
-        const dest = path.join(wwwDir, name);
-        fs.copyFileSync(src, dest);
+    for (const name of fs.readdirSync(distDir)) {
+      if (name.startsWith("uc-") && (name.endsWith(".js") || name.endsWith(".js.LICENSE.txt"))) {
+        fs.copyFileSync(path.join(distDir, name), path.join(wwwDir, name));
+        wanted.add(name);
         chunkCount++;
       }
+    }
+  }
+  // Prune stale chunks
+  for (const name of fs.readdirSync(wwwDir)) {
+    if (name.startsWith("uc-") && (name.endsWith(".js") || name.endsWith(".js.LICENSE.txt"))) {
+      if (!wanted.has(name)) fs.unlinkSync(path.join(wwwDir, name));
     }
   }
   if (chunkCount > 0) {
     console.log(`📦 Bundled ${chunkCount} panel chunk(s) (uc-*.js) → ${CONFIG.sourceDir}/www/`);
   } else {
     console.log(
-      `⚠️  No uc-*.js chunks found in ${distDir}. Build the Ultra Card project with 'npm run build' first, then run deploy again.`
+      `⚠️  No uc-*.js chunks found in ${distDir}. Build Ultra Card with 'npm run build' first.`
     );
   }
   console.log("");
@@ -119,58 +136,39 @@ function copyRecursive(src, dest) {
   }
 }
 
-// Count files in directory
-function countFiles(dir) {
-  let count = 0;
-  const items = fs.readdirSync(dir);
-
-  items.forEach((item) => {
-    const fullPath = path.join(dir, item);
-    const stat = fs.statSync(fullPath);
-
-    if (stat.isDirectory()) {
-      count += countFiles(fullPath);
-    } else {
-      count++;
-    }
-  });
-
-  return count;
-}
-
-// Deploy integration to target path
+// Deploy integration to target path (rsync when available — much faster on SMB)
 function deployIntegration(targetPath) {
   try {
     const sourcePath = path.resolve(__dirname, CONFIG.sourceDir);
+    const started = Date.now();
 
     if (!fs.existsSync(sourcePath)) {
       console.log(`  ❌ Source not found: ${sourcePath}`);
       return false;
     }
 
-    // Create parent directory
     const parentDir = path.dirname(targetPath);
     if (!fs.existsSync(parentDir)) {
       console.log(`  📁 Creating directory: ${parentDir}`);
       fs.mkdirSync(parentDir, { recursive: true });
     }
-
-    // Samba/network shares can fail when removing a non-empty integration directory
-    // (observed ENOTEMPTY on /Volumes/config). Deploy in place instead of deleting
-    // the root folder so updated panel chunks always make it to Home Assistant.
     if (!fs.existsSync(targetPath)) {
-      console.log(`  📁 Creating integration directory...`);
       fs.mkdirSync(targetPath, { recursive: true });
     }
 
-    // Copy integration files
-    console.log(`  📦 Copying integration files...`);
-    copyRecursive(sourcePath, targetPath);
+    let method = "copy";
+    try {
+      execSync("command -v rsync", { stdio: "ignore" });
+      execSync(`rsync -a --delete "${sourcePath}/" "${targetPath}/"`, {
+        stdio: "ignore",
+      });
+      method = "rsync";
+    } catch {
+      console.log(`  📦 Copying integration files…`);
+      copyRecursive(sourcePath, targetPath);
+    }
 
-    // Count files
-    const fileCount = countFiles(targetPath);
-    console.log(`  ✅ Deployed ${fileCount} files`);
-
+    console.log(`  ✅ Deployed via ${method} (${Date.now() - started}ms)`);
     return true;
   } catch (error) {
     console.error(`  ❌ Deployment failed: ${error.message}`);
@@ -180,16 +178,21 @@ function deployIntegration(targetPath) {
 
 // Main deployment process
 async function deploy() {
-  try {
-    console.log("📚 Syncing documentation from Ultra Card wiki…\n");
-    execSync("node scripts/sync-wiki-docs.js", { stdio: "inherit", cwd: __dirname });
-    console.log("");
-  } catch (error) {
-    console.warn(
-      "⚠️  Wiki docs sync failed (continuing deploy):",
-      error.message || error
-    );
-    console.warn("   Run npm run docs:sync manually if the Docs tab is empty.\n");
+  // Wiki sync is slow (network clone). Skip by default during deploy; run docs:sync when needed.
+  // Set DOCS_SYNC=1 to force a wiki sync before deploy.
+  if (process.env.DOCS_SYNC === "1") {
+    try {
+      console.log("📚 Syncing documentation from Ultra Card wiki…\n");
+      execSync("node scripts/sync-wiki-docs.js", { stdio: "inherit", cwd: __dirname });
+      console.log("");
+    } catch (error) {
+      console.warn(
+        "⚠️  Wiki docs sync failed (continuing deploy):",
+        error.message || error
+      );
+    }
+  } else {
+    console.log("📚 Skipping wiki sync (set DOCS_SYNC=1 to enable)\n");
   }
 
   // Bundle panel JS into integration www/ folder before deploying (exits if panel missing)

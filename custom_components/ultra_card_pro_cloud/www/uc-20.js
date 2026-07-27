@@ -178,6 +178,7 @@
 
     .about-button.docs {
       background-color: var(--primary-color);
+      color: var(--text-primary-color, #fff);
       cursor: pointer;
     }
 
@@ -221,4 +222,4 @@
     .version-info p {
       margin: 4px 0;
     }
-  `,T([(0,I.MZ)({attribute:!1})],B.prototype,"hass",void 0),B=T([(0,I.EM)("ultra-about-tab")],B)},4541(A,J,S){S.d(J,{x:()=>k});const k="3.4.0"}}]);
+  `,T([(0,I.MZ)({attribute:!1})],B.prototype,"hass",void 0),B=T([(0,I.EM)("ultra-about-tab")],B)},4541(A,J,S){S.d(J,{x:()=>k});const k="3.6.0-beta4"}}]);

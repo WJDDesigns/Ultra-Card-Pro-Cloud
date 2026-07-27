@@ -14,10 +14,41 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, DATA_COORDINATOR
+from .const import DOMAIN, DATA_COORDINATOR, INTEGRATION_CAPABILITIES
 from .coordinator import UltraCardProCloudCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _read_integration_version() -> str:
+    """Read version from manifest.json (always present in HACS installs)."""
+    import json
+    import os
+
+    manifest_path = os.path.join(os.path.dirname(__file__), "manifest.json")
+    try:
+        with open(manifest_path, encoding="utf-8") as handle:
+            data = json.load(handle)
+        version = data.get("version")
+        if isinstance(version, str) and version.strip():
+            return version.strip()
+    except Exception:  # pragma: no cover - never break sensor setup
+        _LOGGER.debug("Could not read integration version from manifest.json", exc_info=True)
+
+    # Dev checkout fallback: repo-root version.py
+    try:
+        version_file = os.path.join(os.path.dirname(__file__), "..", "..", "version.py")
+        if os.path.exists(version_file):
+            with open(version_file, encoding="utf-8") as handle:
+                for line in handle:
+                    if line.startswith("__version__"):
+                        return line.split("=", 1)[1].strip().strip('"').strip("'")
+    except Exception:  # pragma: no cover
+        pass
+    return "0.0.0"
+
+
+INTEGRATION_VERSION = _read_integration_version()
 
 
 async def async_setup_entry(
@@ -81,9 +112,18 @@ class UltraCardProCloudAuthSensor(CoordinatorEntity, SensorEntity):
         
         SECURITY: This data comes from the authenticated API and
         cannot be manipulated by users through the frontend.
+
+        Always includes integration_version + capabilities so Ultra Card
+        can detect outdated Connect installs even when signed out.
         """
+        handshake = {
+            "integration_version": INTEGRATION_VERSION,
+            "capabilities": dict(INTEGRATION_CAPABILITIES),
+        }
+
         if not self.coordinator.data or not self.coordinator.data.get("authenticated"):
             return {
+                **handshake,
                 "authenticated": False,
                 "subscription_tier": "free",
                 "subscription_status": "expired",
@@ -101,6 +141,7 @@ class UltraCardProCloudAuthSensor(CoordinatorEntity, SensorEntity):
         
         # Do NOT expose token in entity state; frontend uses integration proxy for API calls
         return {
+            **handshake,
             "authenticated": True,
             "user_id": self.coordinator.data.get("user_id"),
             "username": username,

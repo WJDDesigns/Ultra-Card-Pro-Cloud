@@ -27,15 +27,8 @@ jobs:
       - name: Verify documentation bundle
         run: npm run docs:check
 
-      - name: Verify panel bundle is present
-        run: |
-          test -f custom_components/ultra_card_pro_cloud/www/ultra-card-panel.js
-          chunk_count=$(find custom_components/ultra_card_pro_cloud/www -name 'uc-*.js' | wc -l | tr -d ' ')
-          echo "Found ${chunk_count} uc-*.js chunks"
-          if [ "${chunk_count}" -lt 1 ]; then
-            echo "Expected at least one uc-*.js chunk"
-            exit 1
-          fi
+      - name: Verify panel bundle hashes
+        run: npm run panel:check
 
       - name: Check for debug telemetry in shipped panel assets
         run: |

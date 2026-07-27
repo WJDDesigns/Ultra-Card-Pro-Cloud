@@ -7,6 +7,8 @@ import logging
 import os
 import secrets
 from pathlib import Path
+from typing import Any
+from datetime import datetime, timezone
 
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
@@ -32,7 +34,11 @@ from .const import (
 )
 from .coordinator import UltraCardProCloudCoordinator
 from .helpers import (
+    build_local_smart_preset,
+    build_smart_tier_access,
+    extract_conversation_text,
     extract_user_colors,
+    normalize_smart_connector_preference,
     normalize_proxy_payload,
     safe_upload_filename,
     store_user_colors,
@@ -111,6 +117,17 @@ def _request_can_manage_shared_auth(request: web.Request) -> bool:
     return bool(getattr(user, "is_admin", False) or getattr(user, "is_owner", False))
 
 
+def _get_primary_coordinator(hass: HomeAssistant):
+    """Return the first configured coordinator instance (if any)."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        return None
+    entry = entries[0]
+    domain_data = hass.data.get(DOMAIN, {})
+    entry_data = domain_data.get(entry.entry_id, {})
+    return entry_data.get(DATA_COORDINATOR)
+
+
 # ---------------------------------------------------------------------------
 # HTTP API views — single source of auth for the Ultra Card frontend.
 # The frontend NEVER stores credentials in localStorage; instead it calls
@@ -122,6 +139,89 @@ AUTH_SENSOR_ID = "sensor.ultra_card_pro_cloud_authentication_status"
 # Wait for coordinator to finish auth and sensor to update (avoids "succeeds on 3rd attempt" race)
 AUTH_SENSOR_WAIT_TIMEOUT = 15  # seconds
 AUTH_SENSOR_POLL_INTERVAL = 0.5  # seconds
+SMART_QUOTA_STORAGE_KEY = "ultra_card_pro_cloud.smart_generation_quotas"
+SMART_QUOTA_STORAGE_VERSION = 1
+SMART_FREE_DAILY_GENERATION_LIMIT = 5
+
+
+def _quota_user_key(user_id: str | None) -> str:
+    """Return storage key for per-user quota tracking."""
+    return user_id or "_anonymous"
+
+
+def _quota_today_utc_iso() -> str:
+    """Return UTC date string used for daily quota reset."""
+    from datetime import datetime, timezone
+
+    return datetime.now(timezone.utc).date().isoformat()
+
+
+async def _get_free_quota_limits(
+    hass: HomeAssistant, user_id: str | None
+) -> dict[str, Any]:
+    """Return current daily free generation limits for the user."""
+    store = Store(hass, SMART_QUOTA_STORAGE_VERSION, SMART_QUOTA_STORAGE_KEY)
+    data = await store.async_load()
+    users = data.get("users") if isinstance(data, dict) else {}
+    bucket = users.get(_quota_user_key(user_id)) if isinstance(users, dict) else {}
+    today = _quota_today_utc_iso()
+
+    used = 0
+    if isinstance(bucket, dict) and bucket.get("date") == today:
+        bucket_used = bucket.get("free_used")
+        if isinstance(bucket_used, int) and bucket_used > 0:
+            used = bucket_used
+
+    free_remaining = max(0, SMART_FREE_DAILY_GENERATION_LIMIT - used)
+    return {
+        "free_daily_generations": SMART_FREE_DAILY_GENERATION_LIMIT,
+        "free_remaining": free_remaining,
+        "pro_unlimited": True,
+    }
+
+
+async def _consume_free_quota_generation(
+    hass: HomeAssistant, user_id: str | None
+) -> dict[str, Any]:
+    """Consume one free generation and return updated limits."""
+    store = Store(hass, SMART_QUOTA_STORAGE_VERSION, SMART_QUOTA_STORAGE_KEY)
+    data = await store.async_load()
+    payload = data if isinstance(data, dict) else {}
+    users = payload.get("users") if isinstance(payload.get("users"), dict) else {}
+
+    today = _quota_today_utc_iso()
+    key = _quota_user_key(user_id)
+    bucket = users.get(key)
+    used = 0
+    if isinstance(bucket, dict) and bucket.get("date") == today:
+        bucket_used = bucket.get("free_used")
+        if isinstance(bucket_used, int) and bucket_used > 0:
+            used = bucket_used
+
+    used += 1
+    users[key] = {"date": today, "free_used": used}
+    payload["users"] = users
+    await store.async_save(payload)
+
+    free_remaining = max(0, SMART_FREE_DAILY_GENERATION_LIMIT - used)
+    return {
+        "free_daily_generations": SMART_FREE_DAILY_GENERATION_LIMIT,
+        "free_remaining": free_remaining,
+        "pro_unlimited": True,
+    }
+
+
+def _has_ha_assist(hass: HomeAssistant) -> bool:
+    """Return whether Home Assistant exposes an Assist/conversation path."""
+    if hass.services.has_service("conversation", "process"):
+        return True
+    try:
+        return any(
+            entity_id.startswith("conversation.")
+            for entity_id in hass.states.async_entity_ids()
+        )
+    except Exception:
+        return False
 
 
 async def _wait_for_auth_sensor(hass: HomeAssistant) -> dict | None:
@@ -466,6 +566,238 @@ class UltraCardProxyView(HomeAssistantView):
         return self.json({"error": "Method not allowed", "_status": 405, "_body": None}, status_code=405)
 
 
+class UltraCardSmartConnectorsStatusView(HomeAssistantView):
+    """GET /api/ultra_card_pro_cloud/smart/connectors/status."""
+
+    url = "/api/ultra_card_pro_cloud/smart/connectors/status"
+    name = "api:ultra_card_pro_cloud:smart_connectors_status"
+    requires_auth = True
+
+    async def get(self, request: web.Request) -> web.Response:
+        hass: HomeAssistant = request.app["hass"]
+        user_id = _request_hass_user_id(request)
+        coordinator = _get_primary_coordinator(hass)
+        has_ha_assist = _has_ha_assist(hass)
+        subscription = (getattr(coordinator, "data", None) or {}).get("subscription", {})
+        is_pro = (
+            isinstance(subscription, dict)
+            and subscription.get("tier") == "pro"
+            and subscription.get("status") == "active"
+        )
+        limits = await _get_free_quota_limits(hass, user_id)
+        warnings: list[str] = []
+
+        status: dict[str, Any] = {
+            "available": {
+                "ha_assist": has_ha_assist,
+                "user_provider": False,
+                "cloud_default": False,
+            },
+            "default_connector": "ha_assist" if has_ha_assist else "auto",
+            "ha": {
+                "supports_text": has_ha_assist,
+            },
+            "limits": limits,
+            "tier_access": build_smart_tier_access(
+                is_pro_user=is_pro,
+                free_daily_generations=limits.get("free_daily_generations"),
+                free_remaining=limits.get("free_remaining"),
+            ),
+        }
+
+        if not has_ha_assist:
+            warnings.append(
+                "Home Assistant Assist is not configured. Set up an Assist pipeline to use Smart Cards."
+            )
+
+        if warnings:
+            status["warnings"] = warnings
+        return self.json(status)
+
+
+class UltraCardSmartGenerateView(HomeAssistantView):
+    """POST /api/ultra_card_pro_cloud/smart/generate."""
+
+    url = "/api/ultra_card_pro_cloud/smart/generate"
+    name = "api:ultra_card_pro_cloud:smart_generate"
+    requires_auth = True
+
+    async def post(self, request: web.Request) -> web.Response:
+        hass: HomeAssistant = request.app["hass"]
+        user_id = _request_hass_user_id(request)
+        try:
+            body = await request.json()
+        except Exception:
+            return self.json({"error": "Invalid JSON"}, status_code=400)
+
+        if not isinstance(body, dict):
+            return self.json({"error": "Request body must be an object"}, status_code=400)
+
+        prompt = str(body.get("prompt") or "").strip()
+        if not prompt:
+            return self.json({"error": "prompt is required"}, status_code=400)
+
+        connector_preference = normalize_smart_connector_preference(
+            body.get("connector_preference")
+        )
+
+        coordinator = _get_primary_coordinator(hass)
+        subscription = (getattr(coordinator, "data", None) or {}).get("subscription", {})
+        is_pro = (
+            isinstance(subscription, dict)
+            and subscription.get("tier") == "pro"
+            and subscription.get("status") == "active"
+        )
+        requested_tier = "pro" if str(body.get("tier") or "free").lower() == "pro" else "free"
+        warnings: list[str] = []
+        if requested_tier == "pro" and not is_pro:
+            requested_tier = "free"
+            warnings.append("Pro generation requested but account is not Pro; using free tier.")
+
+        limits = await _get_free_quota_limits(hass, user_id)
+
+        if requested_tier == "free" and not is_pro:
+            free_remaining = limits.get("free_remaining")
+            if isinstance(free_remaining, int) and free_remaining <= 0:
+                return self.json(
+                    {
+                        "error": "Daily free Smart generations reached. Upgrade to Pro for unlimited generations.",
+                        "limits": limits,
+                        "tier_access": build_smart_tier_access(
+                            is_pro_user=is_pro,
+                            free_daily_generations=limits.get("free_daily_generations"),
+                            free_remaining=limits.get("free_remaining"),
+                        ),
+                    },
+                    status_code=429,
+                )
+
+        if connector_preference not in ("ha_assist", "auto"):
+            warnings.append("Smart Cards now use Home Assistant Assist; ignoring other connector preferences.")
+
+        try:
+            assist_result = await hass.services.async_call(
+                "conversation",
+                "process",
+                {"text": prompt},
+                blocking=True,
+                return_response=True,
+            )
+            assist_text = extract_conversation_text(assist_result)
+        except Exception as err:
+            return self.json(
+                {"error": "Home Assistant Assist failed", "details": str(err)},
+                status_code=502,
+            )
+
+        if requested_tier == "free" and not is_pro:
+            limits = await _consume_free_quota_generation(hass, user_id)
+
+        payload = build_local_smart_preset(
+            prompt,
+            requested_tier,
+            "ha_assist",
+            warnings,
+            assist_text,
+        )
+        payload["limits"] = limits
+        payload["tier_access"] = build_smart_tier_access(
+            is_pro_user=is_pro,
+            free_daily_generations=limits.get("free_daily_generations"),
+            free_remaining=limits.get("free_remaining"),
+        )
+        return self.json(payload, status_code=200)
+
+
+class UltraCardDiagnosticsView(HomeAssistantView):
+    """GET/POST /api/ultra_card_pro_cloud/diagnostics — redacted Connect health report."""
+
+    url = "/api/ultra_card_pro_cloud/diagnostics"
+    name = "api:ultra_card_pro_cloud:diagnostics"
+    requires_auth = True
+
+    async def get(self, request: web.Request) -> web.Response:
+        return await self._build(request, run_connectivity=False)
+
+    async def post(self, request: web.Request) -> web.Response:
+        run_connectivity = True
+        try:
+            body = await request.json()
+            if isinstance(body, dict) and "run_connectivity" in body:
+                run_connectivity = bool(body.get("run_connectivity"))
+        except Exception:
+            pass
+        return await self._build(request, run_connectivity=run_connectivity)
+
+    async def _build(self, request: web.Request, *, run_connectivity: bool) -> web.Response:
+        hass: HomeAssistant = request.app["hass"]
+        if not _request_can_manage_shared_auth(request):
+            return self.json(
+                {"error": "Only Home Assistant admins can download Ultra Card Connect diagnostics."},
+                status_code=403,
+            )
+
+        from .diagnostics import async_get_config_entry_diagnostics
+        from .sensor import INTEGRATION_VERSION
+        from .const import INTEGRATION_CAPABILITIES
+
+        entries = hass.config_entries.async_entries(DOMAIN)
+        report: dict[str, Any] = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "integration_version": INTEGRATION_VERSION,
+            "capabilities": dict(INTEGRATION_CAPABILITIES),
+            "panel": _read_panel_asset_meta(),
+            "entries": [],
+        }
+
+        if not entries:
+            report["error"] = "Ultra Card Connect is not configured (no config entry)."
+            return self.json(report, status_code=200)
+
+        for entry in entries:
+            try:
+                entry_diag = await async_get_config_entry_diagnostics(hass, entry)
+                report["entries"].append(entry_diag)
+            except Exception as err:
+                report["entries"].append({"error": str(err), "entry_id": entry.entry_id})
+
+        # Optional live connectivity for the first entry when requested
+        if run_connectivity and entries and report["entries"]:
+            entry = entries[0]
+            entry_data = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
+            coordinator = entry_data.get(DATA_COORDINATOR)
+            if coordinator is not None:
+                try:
+                    report["entries"][0]["connectivity"] = (
+                        await coordinator.async_test_connectivity()
+                    )
+                except Exception as err:
+                    report["entries"][0]["connectivity"] = {"errors": [str(err)]}
+
+        return self.json(report, status_code=200)
+
+
+def _read_panel_asset_meta() -> dict[str, Any]:
+    """Read optional panel-assets.json metadata for diagnostics."""
+    import json
+    from pathlib import Path
+
+    manifest = Path(__file__).parent / "www" / "panel-assets.json"
+    if not manifest.exists():
+        return {"manifest_present": False}
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        return {
+            "manifest_present": True,
+            "synced_at": data.get("synced_at"),
+            "ultra_card_version": data.get("ultra_card_version"),
+            "ultra_card_commit": data.get("ultra_card_commit"),
+            "file_count": len(data.get("files") or {}),
+        }
+    except Exception:
+        return {"manifest_present": True, "error": "unreadable"}
+
+
 class UltraCardMediaUploadView(HomeAssistantView):
     """POST /api/ultra_card_pro_cloud/media_upload — forward multipart photo to ultracard.io.
 
@@ -596,7 +928,10 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.http.register_view(UltraCardRegisterView())
     hass.http.register_view(UltraCardFavoriteColorsView())
     hass.http.register_view(UltraCardProxyView())
+    hass.http.register_view(UltraCardSmartConnectorsStatusView())
+    hass.http.register_view(UltraCardSmartGenerateView())
     hass.http.register_view(UltraCardMediaUploadView())
+    hass.http.register_view(UltraCardDiagnosticsView())
 
     _LOGGER.info("Ultra Card Pro Cloud v%s component setup called", __version__)
 

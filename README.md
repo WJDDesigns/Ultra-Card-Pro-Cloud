@@ -156,7 +156,7 @@ Open your Home Assistant and add this repository in HACS:
 The **Ultra Card Hub** (sidebar panel) is **served by this integration**, not by the HACS “Ultra Card” frontend. When you open the Ultra Card item in the sidebar, Home Assistant loads the panel JavaScript from this integration’s `www/` folder. So:
 
 - **Updating only the Ultra Card (frontend)** updates the card on your dashboards and the card editor, but **the sidebar panel stays on the old version** until this integration is updated.
-- **Updating this integration** (Ultra Card Connect / Pro Cloud) delivers the latest panel (layout, Colors tab, etc.) and the favorite-colors API. After an integration update, restart HA or hard-refresh the frontend if the panel looks unchanged.
+- **Updating this integration** (Ultra Card Connect) delivers the latest panel (layout, Colors tab, etc.) and the favorite-colors API. After an integration update, restart HA or hard-refresh the frontend if the panel looks unchanged.
 
 For the sidebar panel and favorite colors to match the changelog, **update this integration** when a new version is released.
 

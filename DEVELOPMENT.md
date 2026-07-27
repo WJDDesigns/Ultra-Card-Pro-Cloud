@@ -39,9 +39,11 @@ cp .env.example .env   # configure local deploy targets
 | `npm run build` | Validate Python/JSON and create `dist/` |
 | `npm run build:release` | Build + create `release/*.zip` |
 | `npm run build:deploy` | Build + deploy to configured HA instance |
-| `npm run deploy` | Deploy integration (bundles panel from Ultra Card if present) |
+| `npm run deploy` | Deploy integration (bundles panel from Ultra Card; skips wiki sync unless `DOCS_SYNC=1`) |
 | `npm run version:update` | Sync version from `version.py` |
 | `npm run version:check` | Fail if version files disagree |
+| `npm run docs:check` | CI/release: verify docs bundle |
+| `npm run panel:check` | CI/release: verify Hub panel SHA-256 manifest |
 | `pytest tests/` | Run unit tests |
 | `ruff check custom_components/ultra_card_pro_cloud/*.py` | Lint Python |
 
@@ -60,8 +62,11 @@ Run `docs:sync` before release or after wiki updates, then deploy the integratio
 
 The Hub sidebar is served from `custom_components/ultra_card_pro_cloud/www/`.
 
-- **From this repo:** `npm run deploy` copies `../Ultra Card/dist/ultra-card-panel.js` and `uc-*.js` chunks when the sibling Ultra Card repo is built.
-- Set `ULTRA_CARD_PANEL_JS` in `.env` if your Ultra Card build lives elsewhere.
+- **From Ultra Card:** `npm run build && npm run sync:panel` copies `ultra-card-panel.js`, all `uc-*.js` chunks, prunes stale chunks, and writes `www/panel-assets.json` (SHA-256 hashes).
+- **From this repo:** `npm run panel:check` verifies hashes (wired into `build`, CI, and release). `npm run deploy` also copies from the sibling Ultra Card `dist/` when present.
+- Set `ULTRA_CARD_PANEL_JS` / `INTEGRATION_WWW_PATH` if your paths differ.
+
+Release checklist: build Ultra Card → `sync:panel` → `panel:check` here → tag Connect.
 
 After changing the panel, restart Home Assistant and hard-refresh the browser.
 

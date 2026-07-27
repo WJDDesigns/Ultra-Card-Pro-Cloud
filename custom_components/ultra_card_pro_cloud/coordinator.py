@@ -1,4 +1,4 @@
-"""Data coordinator for Ultra Card Pro Cloud."""
+"""Data coordinator for Ultra Card Connect."""
 from __future__ import annotations
 
 import logging
@@ -66,7 +66,7 @@ def _format_grace_remaining(seconds_remaining: float) -> str:
 
 
 class UltraCardProCloudCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching Ultra Card Pro Cloud data."""
+    """Class to manage fetching Ultra Card Connect data."""
 
     def __init__(
         self,
@@ -91,7 +91,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
         super().__init__(
             hass,
             _LOGGER,
-            name="Ultra Card Pro Cloud",
+            name="Ultra Card Connect",
             update_interval=timedelta(seconds=TOKEN_REFRESH_INTERVAL),
         )
 
@@ -754,9 +754,53 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
         
         return results
 
+    def get_redacted_diagnostics(self) -> dict[str, Any]:
+        """Build a redacted diagnostics snapshot (never includes tokens/passwords)."""
+        data = self.data or {}
+        subscription = data.get("subscription") or {}
+        now = int(time.time())
+        token_expires_at = int(self._token_expires_at or 0)
+        seconds_until_expiry = token_expires_at - now if token_expires_at else None
+        last_success_age = None
+        if self._last_successful_time:
+            last_success_age = round(time.time() - self._last_successful_time, 1)
+
+        grace_remaining = None
+        if self._last_successful_time:
+            remaining = GRACE_PERIOD_SECONDS - (time.time() - self._last_successful_time)
+            if remaining > 0:
+                grace_remaining = round(remaining, 1)
+
+        email = data.get("email") or ""
+        redacted_email = ""
+        if isinstance(email, str) and "@" in email:
+            local, _, domain = email.partition("@")
+            redacted_email = f"{local[:1]}***@{domain}" if local else f"***@{domain}"
+
+        return {
+            "authenticated": bool(data.get("authenticated")),
+            "username": data.get("username"),
+            "email_redacted": redacted_email,
+            "subscription_tier": subscription.get("tier") or data.get("subscription_tier"),
+            "subscription_status": subscription.get("status") or data.get("subscription_status"),
+            "needs_reauth": bool(self._reauth_requested),
+            "last_update_success": bool(self.last_update_success),
+            "last_poll": data.get("last_poll"),
+            "connected_at": data.get("connected_at"),
+            "token_present": bool(self._jwt_token),
+            "refresh_token_present": bool(self._refresh_token),
+            "token_expires_in_seconds": seconds_until_expiry,
+            "auth_failure_count": int(self._auth_failure_count or 0),
+            "last_successful_age_seconds": last_success_age,
+            "grace_remaining_seconds": grace_remaining,
+            "has_stored_credentials": bool(
+                self.entry.data and CONF_USERNAME in self.entry.data
+            ),
+        }
+
     async def async_logout(self) -> None:
         """Logout and invalidate tokens."""
-        _LOGGER.debug("🚪 Logging out from Ultra Card Pro Cloud")
+        _LOGGER.debug("🚪 Logging out from Ultra Card Connect")
         
         # Try to invalidate token on server (JWT Auth Pro revoke endpoint)
         if self._jwt_token:

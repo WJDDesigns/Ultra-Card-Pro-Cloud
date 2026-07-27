@@ -42,6 +42,21 @@ PANEL_STATIC_URL_PATH = "/ultra_card_pro_cloud_panel"
 PANEL_JS_URL = "/ultra_card_pro_cloud_panel/ultra-card-panel.js"
 PANEL_CUSTOM_ELEMENT = "ultra-card-panel"
 
+# Integration capability flags exposed on the auth sensor for Ultra Card handshake.
+# Add a key (always True while shipped) whenever a new REST surface is introduced.
+CAPABILITY_FAVORITE_COLORS = "favorite_colors"
+CAPABILITY_PROXY = "proxy"
+CAPABILITY_MEDIA_UPLOAD = "media_upload"
+CAPABILITY_SMART = "smart"
+
+INTEGRATION_CAPABILITIES: dict[str, bool] = {
+    CAPABILITY_FAVORITE_COLORS: True,
+    CAPABILITY_PROXY: True,
+    CAPABILITY_MEDIA_UPLOAD: True,
+    CAPABILITY_SMART: True,
+    "diagnostics": True,
+}
+
 
 def is_proxy_url_allowed(url: str) -> bool:
     """Return True when url is an allowed ultracard.io API endpoint."""

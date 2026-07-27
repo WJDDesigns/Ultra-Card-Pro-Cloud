@@ -4,6 +4,13 @@ from __future__ import annotations
 
 import json
 import re
+import secrets
+from datetime import datetime, timezone
+from typing import Any
+
+SMART_CONNECTOR_OPTIONS = frozenset(
+    {"auto", "ha_assist", "user_provider", "cloud_default"}
+)
 
 
 def safe_upload_filename(name: str) -> str:
@@ -86,3 +93,151 @@ def store_user_colors(data: dict | None, user_id: str | None, colors: list[dict]
     users[user_id] = user_bucket
     next_data["users"] = users
     return next_data
+
+
+def normalize_smart_connector_preference(value: str | None) -> str:
+    """Return a safe Smart connector preference value."""
+    normalized = (value or "").strip().lower()
+    if normalized in SMART_CONNECTOR_OPTIONS:
+        return normalized
+    return "auto"
+
+
+def extract_conversation_text(payload: Any) -> str | None:
+    """Best-effort extraction of Assist text from service response payloads."""
+    if isinstance(payload, str):
+        text = payload.strip()
+        return text or None
+
+    if isinstance(payload, dict):
+        candidates = (
+            payload.get("speech"),
+            payload.get("text"),
+            payload.get("response"),
+            payload.get("plain"),
+        )
+        for candidate in candidates:
+            extracted = extract_conversation_text(candidate)
+            if extracted:
+                return extracted
+        for value in payload.values():
+            extracted = extract_conversation_text(value)
+            if extracted:
+                return extracted
+        return None
+
+    if isinstance(payload, list):
+        for item in payload:
+            extracted = extract_conversation_text(item)
+            if extracted:
+                return extracted
+    return None
+
+
+def build_local_smart_preset(
+    prompt: str,
+    tier: str,
+    connector_used: str,
+    warnings: list[str],
+    assist_response: str | None = None,
+) -> dict[str, Any]:
+    """Build a Smart preset from the user's prompt and optional Assist response."""
+    now = datetime.now(timezone.utc).isoformat()
+    compact_prompt = " ".join(prompt.split())
+    title = compact_prompt[:42].strip() or "Smart Card"
+    compact_response = " ".join((assist_response or "").split())
+    description = compact_response[:160] or compact_prompt[:160] or "Assist generated starter preset"
+    token = secrets.token_hex(4)
+    preset_id = f"smart-local-{token}"
+    body_content = (
+        "Home Assistant Assist response\n\n"
+        f"{compact_response}\n\n"
+        f"Prompt: {compact_prompt}"
+        if compact_response
+        else f"Prompt: {compact_prompt}"
+    )
+
+    preset = {
+        "id": preset_id,
+        "name": title,
+        "description": description,
+        "category": "layouts",
+        "icon": "mdi:brain",
+        "author": "Home Assistant Assist",
+        "version": "1.0.0",
+        "tags": ["smart", "assist", tier],
+        "layout": {
+            "rows": [
+                {
+                    "id": f"{preset_id}-row",
+                    "column_layout": "1-col",
+                    "columns": [
+                        {
+                            "id": f"{preset_id}-col",
+                            "modules": [
+                                {
+                                    "id": f"{preset_id}-title",
+                                    "type": "text",
+                                    "text": title,
+                                    "font_size": 20,
+                                    "font_weight": "700",
+                                    "alignment": "left",
+                                },
+                                {
+                                    "id": f"{preset_id}-body",
+                                    "type": "markdown",
+                                    "content": body_content,
+                                },
+                            ],
+                        }
+                    ],
+                }
+            ]
+        },
+        "metadata": {
+            "created": now,
+            "updated": now,
+        },
+    }
+
+    return {
+        "smart_preset": preset,
+        "generation": {
+            "connector_used": connector_used,
+            "tier_required": tier,
+            "warnings": warnings,
+            "fallback": True,
+        },
+    }
+
+
+def merge_smart_status(
+    base_status: dict[str, Any], upstream_status: dict[str, Any]
+) -> dict[str, Any]:
+    """Merge upstream status payload into local fallback defaults."""
+    merged = dict(base_status)
+    for key in ("available", "ha", "limits"):
+        base_part = merged.get(key)
+        upstream_part = upstream_status.get(key)
+        if isinstance(base_part, dict) and isinstance(upstream_part, dict):
+            merged[key] = {**base_part, **upstream_part}
+        elif upstream_part is not None:
+            merged[key] = upstream_part
+
+    for key in ("default_connector", "warnings", "tier_access"):
+        if upstream_status.get(key) is not None:
+            merged[key] = upstream_status[key]
+    return merged
+
+
+def build_smart_tier_access(
+    is_pro_user: bool, free_daily_generations: int | None, free_remaining: int | None
+) -> dict[str, Any]:
+    """Build tier access payload for Smart responses."""
+    return {
+        "can_generate_free": True,
+        "can_generate_pro": bool(is_pro_user),
+        "is_pro_user": bool(is_pro_user),
+        "free_daily_generations": free_daily_generations,
+        "free_remaining": free_remaining,
+    }

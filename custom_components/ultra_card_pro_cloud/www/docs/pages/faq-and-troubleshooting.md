@@ -86,17 +86,17 @@ Common pitfall — `expand()` returns light entities themselves, but you might b
 You need both:
 
 1. An **UltraCard.io account** (sign up at [UltraCard.io](https://ultracard.io)).
-2. The **Ultra Card Pro Cloud** custom HA integration (HACS → Integrations).
+2. The **Ultra Card Connect** custom HA integration (HACS → Integrations).
 
-After installing the integration, sign in via **Settings → Devices & services → Add integration → Ultra Card Pro Cloud**. See [Pro and Cloud](#uc-doc-pro-and-cloud).
+After installing the integration, sign in via **Settings → Devices & services → Add integration → Ultra Card Connect**. See [Pro and Cloud](#uc-doc-pro-and-cloud).
 
 ### Sidebar Hub is missing
 
-The Hub is served by the **Pro Cloud integration**, not HACS. Update the integration in HACS → Integrations and restart HA. Just updating the card does **not** update the Hub.
+The Hub is served by the **Ultra Card Connect integration**, not HACS. Update the integration in HACS → Integrations and restart HA. Just updating the card does **not** update the Hub.
 
 ### Cloud sync paused / errors
 
-Open the cloud icon in the editor — it shows the last sync error. Re-authenticate via **Settings → Devices & services → Ultra Card Pro Cloud → Configure**.
+Open the cloud icon in the editor — it shows the last sync error. Re-authenticate via **Settings → Devices & services → Ultra Card Connect → Configure**.
 
 ---
 
