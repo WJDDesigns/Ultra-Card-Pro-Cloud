@@ -2,6 +2,16 @@
 
 All notable changes to Ultra Card Connect will be documented in this file.
 
+## [1.7.0] - 2026-08-11
+
+### Changed
+- **Bundled Hub panel updated to Ultra Card 3.7.0** - Includes Hub My Presets authoring (submit, edit, review status), new preset categories (Layout, Content, Data, Controls, Inputs, Media), required featured image on preset submit, favorites sync fixes, native card discovery, the Add Module gallery, appliance and layout modules, household PRO modules, and the full privacy, performance, and accessibility work from the 3.7.0 betas.
+- **Panel bundle refreshed** - Synced `ultra-card-panel.js` and chunk assets from Ultra Card 3.7.0 (`511f89a4`) with an updated `panel-assets.json` SHA-256 manifest.
+
+### Notes
+- After updating, **restart Home Assistant** and hard refresh your browser (Ctrl+Shift+R / Cmd+Shift+R) so the new Hub panel loads.
+- **Ultra Card 3.7.0 or newer** is recommended alongside this release so Hub preset authoring, category filters, and the rest of the 3.7.0 Hub features match what Connect serves.
+
 ## [1.6.0] - 2026-07-27
 
 ### Added
