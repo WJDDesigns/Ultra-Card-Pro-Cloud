@@ -295,7 +295,33 @@ class UltraCardLoginView(HomeAssistantView):
         if attrs is not None:
             return self.json({"success": True, "user": _user_attrs_for_frontend(attrs)})
 
-        return self.json({"error": "Authentication failed — check your credentials"}, status_code=401)
+        return self.json(
+            {"error": _login_failure_reason(hass)},
+            status_code=_login_failure_status(hass),
+        )
+
+
+def _coordinator_last_error(hass: HomeAssistant) -> str | None:
+    """Return the coordinator's last recorded failure reason, if any."""
+    for entry in hass.config_entries.async_entries(DOMAIN):
+        entry_data = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
+        coordinator = entry_data.get(DATA_COORDINATOR)
+        if coordinator is not None and getattr(coordinator, "_last_error", None):
+            return coordinator._last_error
+    return None
+
+
+def _login_failure_reason(hass: HomeAssistant) -> str:
+    """Explain why sign-in failed rather than always blaming the credentials."""
+    return _coordinator_last_error(hass) or "Authentication failed — check your credentials"
+
+
+def _login_failure_status(hass: HomeAssistant) -> int:
+    """Bot protection and outages are upstream failures, not bad credentials."""
+    reason = _coordinator_last_error(hass) or ""
+    if reason and "username or password" not in reason:
+        return 502
+    return 401
 
 
 class UltraCardLogoutView(HomeAssistantView):

@@ -21,6 +21,7 @@ from .const import (
     CONF_PASSWORD,
     GRACE_PERIOD_HOURS,
 )
+from .bot_challenge import BOT_CHALLENGE_MESSAGE, is_bot_challenge as _is_bot_challenge
 from .jwt_utils import parse_jwt_expiry
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,6 +39,10 @@ CONNECT_TIMEOUT = 10  # Connection establishment timeout
 
 # Grace period - calculated from hours constant
 GRACE_PERIOD_SECONDS = GRACE_PERIOD_HOURS * 3600
+
+
+class BotChallengeError(UpdateFailed):
+    """Raised when edge bot protection blocks access to the ultracard.io API."""
 
 
 def _get_timeout() -> aiohttp.ClientTimeout:
@@ -83,6 +88,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
         self._last_auth_attempt: float = 0
         self._auth_failure_count: int = 0
         self._reauth_requested: bool = False
+        self._last_error: str | None = None
 
         # Grace period caching - maintains Pro access during server outages
         self._last_successful_data: dict[str, Any] | None = None
@@ -135,6 +141,10 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
 
     def _is_invalid_credentials_error(self, err: Exception) -> bool:
         """Return True when the error indicates revoked or invalid credentials."""
+        # Bot protection blocks the request before WordPress checks anything, so
+        # prompting for credentials would send the user chasing the wrong fault.
+        if isinstance(err, BotChallengeError):
+            return False
         message = str(err).lower()
         return (
             "invalid credentials" in message
@@ -162,6 +172,9 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                 if self._refresh_token:
                     try:
                         await self._refresh_jwt_token()
+                    except BotChallengeError:
+                        # A full re-auth would hit the same wall.
+                        raise
                     except Exception as e:
                         _LOGGER.warning("⚠️ Token refresh failed, re-authenticating: %s", e)
                         await self._authenticate()
@@ -343,6 +356,18 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     _LOGGER.debug("📥 Auth response status: %s", response.status)
                     _LOGGER.debug("📥 Auth response body: %s", response_text[:500])
                     
+                    # Bot protection never reaches WordPress, so retrying cannot
+                    # succeed and only pushes the classifier further. Fail fast
+                    # with an explanation the user can act on.
+                    if _is_bot_challenge(response, response_text):
+                        _LOGGER.error(
+                            "Authentication blocked by bot protection (HTTP %s). %s",
+                            response.status,
+                            BOT_CHALLENGE_MESSAGE,
+                        )
+                        self._last_error = BOT_CHALLENGE_MESSAGE
+                        raise BotChallengeError(BOT_CHALLENGE_MESSAGE)
+
                     # Handle rate limiting (JWT Auth Pro feature)
                     if response.status == 429:
                         retry_after = int(response.headers.get("Retry-After", RATE_LIMIT_DELAY))
@@ -356,21 +381,18 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                             "Authentication failed: Invalid credentials (status %s)",
                             response.status,
                         )
+                        self._last_error = "Invalid ultracard.io username or password."
                         await self._async_request_reauth(
                             f"Invalid credentials (HTTP {response.status})"
                         )
                         raise UpdateFailed(f"Invalid credentials: {response.status}")
                     
-                    # JWT Auth Pro may return 202 for async operations - handle it
-                    if response.status == 202:
-                        _LOGGER.debug("⏳ Got 202 Accepted, request is being processed...")
-                        # Wait a moment and retry
-                        await asyncio.sleep(2)
-                        continue
-                    
                     # Accept any 2xx status as success
                     if not (200 <= response.status < 300):
                         _LOGGER.error("❌ Authentication failed: %s - %s", response.status, response_text[:200])
+                        self._last_error = (
+                            f"ultracard.io returned HTTP {response.status} during sign-in."
+                        )
                         if attempt < MAX_RETRIES - 1:
                             await asyncio.sleep(RETRY_DELAY * (attempt + 1))
                             continue
@@ -382,6 +404,11 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                         data = json.loads(response_text)
                     except json.JSONDecodeError as e:
                         _LOGGER.error("❌ Failed to parse auth response: %s", e)
+                        self._last_error = (
+                            "ultracard.io returned a non-JSON response to the sign-in "
+                            "request. This usually means a CDN, WAF, or security plugin "
+                            "is intercepting /wp-json/ before WordPress."
+                        )
                         raise UpdateFailed(f"Invalid response from server: {e}")
                     
                     # JWT Auth Pro response format
@@ -429,11 +456,13 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     days_until_expiry = seconds_until_expiry / (24 * 60 * 60)
                     _LOGGER.info("✅ Authenticated with ultracard.io (token valid for %.0f days)", days_until_expiry)
                     _LOGGER.debug("🔑 Token received, refresh token available: %s", bool(self._refresh_token))
+                    self._last_error = None
                     return
 
             except aiohttp.ClientError as err:
                 _LOGGER.error("❌ Connection error during authentication (attempt %d/%d): %s", 
                              attempt + 1, MAX_RETRIES, err)
+                self._last_error = f"Cannot reach ultracard.io: {err}"
                 if attempt < MAX_RETRIES - 1:
                     await asyncio.sleep(RETRY_DELAY * (attempt + 1))
                 else:
@@ -442,10 +471,19 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                 raise
             except Exception as err:
                 _LOGGER.error("❌ Unexpected error during authentication: %s", err)
+                self._last_error = f"{type(err).__name__}: {err}"
                 if attempt < MAX_RETRIES - 1:
                     await asyncio.sleep(RETRY_DELAY * (attempt + 1))
                 else:
                     raise UpdateFailed(f"Authentication error: {err}") from err
+
+        # Every attempt ended in `continue` (rate limiting or a retried error
+        # status). Without this the loop falls out silently leaving no token and
+        # no explanation of why.
+        raise UpdateFailed(
+            self._last_error
+            or f"Authentication with ultracard.io failed after {MAX_RETRIES} attempts"
+        )
 
     async def _refresh_jwt_token(self) -> None:
         """Refresh JWT token using refresh token."""
@@ -459,33 +497,35 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("🔄 Refreshing JWT token at: %s", url)
 
         try:
-            # JWT Auth Pro expects the refresh token in Authorization header as Bearer token
-            # OR in the request body - we'll try both approaches
-            headers = _get_headers()
-            headers["Authorization"] = f"Bearer {self._refresh_token}"
-            
+            # JWT Auth Pro issues an opaque refresh token, not a JWT, and it must
+            # be sent in the body only. Adding `Authorization: Bearer <refresh>`
+            # makes the plugin try to decode it as a JWT and reject the whole
+            # request with 403 jwt_auth_invalid_token ("Wrong number of segments").
             async with self.session.post(
                 url,
                 json={"refresh_token": self._refresh_token},
-                headers=headers,
+                headers=_get_headers(),
                 timeout=_get_timeout(),
             ) as response:
                 response_text = await response.text()
                 _LOGGER.debug("📥 Refresh response status: %s", response.status)
                 _LOGGER.debug("📥 Refresh response body: %s", response_text[:500])
-                
+
+                if _is_bot_challenge(response, response_text):
+                    _LOGGER.error(
+                        "Token refresh blocked by bot protection (HTTP %s). %s",
+                        response.status,
+                        BOT_CHALLENGE_MESSAGE,
+                    )
+                    self._last_error = BOT_CHALLENGE_MESSAGE
+                    raise BotChallengeError(BOT_CHALLENGE_MESSAGE)
+
                 # Handle rate limiting
                 if response.status == 429:
                     retry_after = int(response.headers.get("Retry-After", RATE_LIMIT_DELAY))
                     _LOGGER.warning("⏳ Rate limited during refresh, waiting %s seconds", retry_after)
                     await asyncio.sleep(retry_after)
                     # Re-authenticate instead of retrying refresh
-                    await self._authenticate()
-                    return
-                
-                # Handle 202 Accepted (async operation)
-                if response.status == 202:
-                    _LOGGER.info("⏳ Got 202 for refresh, re-authenticating instead...")
                     await self._authenticate()
                     return
                 
@@ -535,6 +575,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                         else:
                             self._token_expires_at = int(time.time()) + (DEFAULT_TOKEN_EXPIRY_DAYS * 24 * 60 * 60)
 
+                    self._last_error = None
                     _LOGGER.debug("✅ Successfully refreshed JWT token")
                 else:
                     _LOGGER.warning("⚠️ No token in refresh response, re-authenticating")
@@ -689,6 +730,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             "ssl": False,
             "api": False,
             "auth": False,
+            "bot_challenge": False,
             "errors": [],
         }
         
@@ -701,7 +743,11 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             ) as resp:
                 results["dns"] = True
                 results["ssl"] = True
-                if resp.status < 500:
+                body = await resp.text()
+                if _is_bot_challenge(resp, body):
+                    results["bot_challenge"] = True
+                    results["errors"].append(BOT_CHALLENGE_MESSAGE)
+                elif resp.status < 500:
                     results["api"] = True
                 else:
                     results["errors"].append(f"Server returned status {resp.status}")
@@ -716,7 +762,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             results["errors"].append(f"Unexpected error: {type(e).__name__}: {e}")
         
         # Test 2: API endpoint accessibility
-        if results["ssl"]:
+        if results["ssl"] and not results["bot_challenge"]:
             try:
                 url = f"{API_BASE_URL}{JWT_ENDPOINT}"
                 async with self.session.get(
@@ -724,11 +770,17 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     timeout=aiohttp.ClientTimeout(total=10, connect=5),
                     headers={"User-Agent": USER_AGENT},
                 ) as resp:
+                    body = await resp.text()
                     # JWT endpoint should return 405 for GET (method not allowed) or 200
                     # Either indicates the API is reachable
-                    if resp.status in (200, 405, 401):
+                    if _is_bot_challenge(resp, body):
+                        results["api"] = False
+                        results["bot_challenge"] = True
+                        results["errors"].append(BOT_CHALLENGE_MESSAGE)
+                    elif resp.status in (200, 405, 401):
                         results["api"] = True
                     else:
+                        results["api"] = False
                         results["errors"].append(f"API endpoint returned unexpected status {resp.status}")
             except Exception as e:
                 results["errors"].append(f"API test failed: {type(e).__name__}: {e}")
@@ -746,8 +798,9 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                 results["errors"].append(f"Authentication test failed: {e}")
         
         _LOGGER.info(
-            "🔍 Connectivity test results - DNS: %s, SSL: %s, API: %s, Auth: %s",
-            results["dns"], results["ssl"], results["api"], results["auth"]
+            "🔍 Connectivity test results - DNS: %s, SSL: %s, API: %s, Auth: %s, Bot challenge: %s",
+            results["dns"], results["ssl"], results["api"], results["auth"],
+            results["bot_challenge"],
         )
         if results["errors"]:
             _LOGGER.warning("⚠️ Connectivity test errors: %s", results["errors"])
@@ -784,6 +837,7 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
             "subscription_tier": subscription.get("tier") or data.get("subscription_tier"),
             "subscription_status": subscription.get("status") or data.get("subscription_status"),
             "needs_reauth": bool(self._reauth_requested),
+            "last_error": self._last_error,
             "last_update_success": bool(self.last_update_success),
             "last_poll": data.get("last_poll"),
             "connected_at": data.get("connected_at"),
