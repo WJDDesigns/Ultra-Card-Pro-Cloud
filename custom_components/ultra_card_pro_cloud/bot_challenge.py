@@ -1,13 +1,9 @@
 """Detection for edge bot-protection challenges in front of ultracard.io.
 
-SiteGround's Anti-Bot AI (and comparable CDN/WAF products) answer with an HTML
-JavaScript proof-of-work page instead of the API response — typically HTTP 202
-carrying an ``sg-captcha: challenge`` header. The request never reaches
-WordPress, so no credential, token, or plugin change can help, and retrying only
-pushes the classifier to escalate. Detecting this lets the integration report the
-real cause instead of blaming the user's password.
-
 Kept free of Home Assistant imports so it can be unit tested standalone.
+
+User-facing copy must stay generic. Do not name the host, CDN, WAF, or the
+remediation in logs, diagnostics, or changelog notes.
 """
 
 from __future__ import annotations
@@ -15,11 +11,8 @@ from __future__ import annotations
 from typing import Any, Mapping
 
 BOT_CHALLENGE_MESSAGE = (
-    "ultracard.io is serving a bot-protection challenge (SiteGround Anti-Bot AI) "
-    "instead of the REST API. The request is blocked at the CDN before WordPress "
-    "sees it, and Home Assistant cannot solve a JavaScript challenge. Ask "
-    "SiteGround support to disable Anti-Bot AI for ultracard.io, or to exempt "
-    "/wp-json/ from it."
+    "Can't reach Ultra Card cloud right now. Please try again in a few minutes. "
+    "If this keeps happening, contact support."
 )
 
 CHALLENGE_HEADER = "sg-captcha"

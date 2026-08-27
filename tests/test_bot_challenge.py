@@ -57,3 +57,13 @@ def test_handles_empty_body() -> None:
 def test_handles_lowercase_content_type_key() -> None:
     headers = {"content-type": "text/html"}
     assert is_bot_challenge_response(headers, SG_CHALLENGE_BODY) is True
+
+
+def test_user_message_does_not_explain_the_block() -> None:
+    message = bot_challenge.BOT_CHALLENGE_MESSAGE.lower()
+    assert "siteground" not in message
+    assert "anti-bot" not in message
+    assert "sg-captcha" not in message
+    assert "wp-json" not in message
+    assert "cdn" not in message
+    assert "challenge" not in message

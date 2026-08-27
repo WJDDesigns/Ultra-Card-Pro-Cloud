@@ -356,14 +356,12 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                     _LOGGER.debug("📥 Auth response status: %s", response.status)
                     _LOGGER.debug("📥 Auth response body: %s", response_text[:500])
                     
-                    # Bot protection never reaches WordPress, so retrying cannot
-                    # succeed and only pushes the classifier further. Fail fast
-                    # with an explanation the user can act on.
+                    # Challenge pages never reach WordPress. Retrying cannot
+                    # succeed. Fail fast with a generic user-facing message.
                     if _is_bot_challenge(response, response_text):
                         _LOGGER.error(
-                            "Authentication blocked by bot protection (HTTP %s). %s",
+                            "Cannot reach Ultra Card cloud during sign-in (HTTP %s).",
                             response.status,
-                            BOT_CHALLENGE_MESSAGE,
                         )
                         self._last_error = BOT_CHALLENGE_MESSAGE
                         raise BotChallengeError(BOT_CHALLENGE_MESSAGE)
@@ -513,9 +511,8 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
 
                 if _is_bot_challenge(response, response_text):
                     _LOGGER.error(
-                        "Token refresh blocked by bot protection (HTTP %s). %s",
+                        "Cannot reach Ultra Card cloud during token refresh (HTTP %s).",
                         response.status,
-                        BOT_CHALLENGE_MESSAGE,
                     )
                     self._last_error = BOT_CHALLENGE_MESSAGE
                     raise BotChallengeError(BOT_CHALLENGE_MESSAGE)
@@ -798,9 +795,8 @@ class UltraCardProCloudCoordinator(DataUpdateCoordinator):
                 results["errors"].append(f"Authentication test failed: {e}")
         
         _LOGGER.info(
-            "🔍 Connectivity test results - DNS: %s, SSL: %s, API: %s, Auth: %s, Bot challenge: %s",
+            "Connectivity test results - DNS: %s, SSL: %s, API: %s, Auth: %s",
             results["dns"], results["ssl"], results["api"], results["auth"],
-            results["bot_challenge"],
         )
         if results["errors"]:
             _LOGGER.warning("⚠️ Connectivity test errors: %s", results["errors"])

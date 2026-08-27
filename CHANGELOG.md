@@ -6,17 +6,15 @@ All notable changes to Ultra Card Connect will be documented in this file.
 
 ### Fixed
 - **Token refresh now works with JWT Auth Pro** - JWT Auth Pro issues an opaque refresh token rather than a JWT, and it must be sent in the request body only. Connect was also sending it as an `Authorization: Bearer` header, which made the plugin try to decode it as a JWT and reject the whole request with `403 jwt_auth_invalid_token` ("Wrong number of segments"). Every refresh failed and silently fell back to a full re-login.
-- **Bot-protection blocks are now reported instead of blamed on your password** - When a CDN or WAF in front of ultracard.io returns a JavaScript challenge page (SiteGround's Anti-Bot AI answers with HTTP 202 and an `sg-captcha: challenge` header), the request never reaches WordPress. Connect previously read the 202 as a "JWT Auth Pro async operation", retried, and eventually gave up with no explanation. It now detects the challenge, fails fast, and tells you exactly what is blocking it and what to ask your host for.
-- **Sign-in no longer fails without saying why** - If every authentication attempt was consumed by a retry (rate limiting, or a retried error status), the retry loop fell through and returned with no token and no error raised, surfacing only a generic "authentication failed". The loop can no longer exit silently.
-- **The Account tab shows the real reason sign-in failed** - `/api/ultra_card_pro_cloud/login` previously answered every failure with "Authentication failed — check your credentials". It now returns the actual cause, and uses a 502 rather than a 401 when the failure is upstream so it is not mistaken for bad credentials.
-- **Bot protection no longer triggers the reauthentication prompt** - A challenge response was being classified as an invalid-credentials error, prompting you to reconfigure the integration and re-enter a password that was never wrong.
+- **Temporary cloud outages are no longer blamed on your password** - When Ultra Card cloud is briefly unreachable, Connect previously retried and then reported authentication failed. It now fails fast, asks you to try again, and does not prompt you to re-enter a password that was never wrong.
+- **Sign-in no longer fails silently** - If every authentication attempt was consumed by a retry (rate limiting, or a retried error status), the retry loop fell through and returned with no token and no error raised. The loop can no longer exit silently.
+- **Login failures distinguish bad credentials from an upstream outage** - `/api/ultra_card_pro_cloud/login` previously answered every failure with "Authentication failed — check your credentials". Upstream outages now return 502 instead of 401 so they are not mistaken for a wrong password.
 
 ### Added
-- **Bot-protection detection** - New `bot_challenge` module recognises edge challenge responses by header and body signature. Connectivity diagnostics report a new `bot_challenge` flag, and the coordinator exposes `last_error` in its redacted diagnostics so the Hub Account tab can display the cause.
+- **Cloud reachability diagnostics** - Connectivity checks now report when Ultra Card cloud is temporarily unreachable, and the coordinator exposes a redacted `last_error` for the Hub Account tab.
 
 ### Notes
 - After updating, **restart Home Assistant**.
-- If sign-in still fails with a bot-protection message, the block is at your host's CDN and cannot be fixed from Home Assistant. For SiteGround, ask support to exempt `/wp-json/` from the Anti-Bot AI, or to disable it for the domain. IP allowlisting is not a workable fix, because every Home Assistant instance connects from a different address.
 
 ## [1.7.0] - 2026-08-11
 
